@@ -83,8 +83,9 @@
   .moneyrow .unit{font-size:13px;color:#333B52;font-weight:700;flex-shrink:0}
   .row2{display:flex;gap:8px}
   .row2>*{flex:1}
-  .navrow{display:flex;gap:10px;align-items:stretch}
-  .navrow .btn-ghost{flex:0 0 auto;width:104px;padding-left:0;padding-right:0}
+  .navrow{display:flex;flex-direction:row;gap:10px;align-items:stretch}
+  .navrow>button{display:flex;align-items:center;justify-content:center}
+  .navrow .btn-ghost{flex:0 0 100px;padding-left:0;padding-right:0}
   .navrow .btn-fill{flex:1}
   .kv{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;gap:8px}
   .kv .k{color:var(--muted)}
@@ -333,10 +334,6 @@
                   <div class="yn" data-yn="f1-disc"><button class="on">있어요</button><button>없어요</button></div>
                 </div>
                 <div id="f1-disc" style="display:flex;flex-direction:column;gap:12px">
-                  <div>
-                    <div class="lblrow"><span class="lbl" style="font-size:12.5px">고객 안내명</span><span class="hint">*필수</span></div>
-                    <input class="ninp left" id="f1-guidename" style="margin-top:6px" value="신규 고객 전용" placeholder="예시 : 신규 고객 전용">
-                  </div>
                   <span class="lbl" style="font-size:12.5px">할인 요금 구성</span>
                   <div id="f1-plist" style="display:flex;flex-direction:column;gap:12px"></div>
                   <div class="addbox">
@@ -366,7 +363,6 @@
                 </div>
                 <div id="f1-cashbox" style="display:flex;flex-direction:column;gap:8px">
                   <div class="moneyrow"><input class="ninp num" id="f1-cash" type="text" inputmode="numeric" value="24"><span class="unit">만원</span></div>
-                  <div class="infoline"><i class="i">!</i><span>거래 성사 수수료는 <b style="color:var(--primary-ink)">44,000원</b>입니다.</span></div>
                 </div>
               </div>
               <div class="gapband"></div>
@@ -519,10 +515,6 @@
                 <div class="yn" data-yn="f2-disc"><button class="on">있어요</button><button>없어요</button></div>
               </div>
               <div id="f2-disc" style="display:flex;flex-direction:column;gap:12px">
-                <div>
-                  <div class="lblrow"><span class="lbl" style="font-size:12.5px">고객 안내명</span><span class="hint">*필수</span></div>
-                  <input class="ninp left" style="margin-top:6px" value="신규 고객 전용">
-                </div>
                 <span class="lbl" style="font-size:12.5px">할인 요금 구성</span>
                 <div id="f2-plist" style="display:flex;flex-direction:column;gap:12px"></div>
                 <div class="addbox">
@@ -549,7 +541,6 @@
               </div>
               <div id="f2-cashbox" style="display:flex;flex-direction:column;gap:8px">
                 <div class="moneyrow"><input class="ninp num" type="text" inputmode="numeric" value="24"><span class="unit">만원</span></div>
-                <div class="infoline"><i class="i">!</i><span>거래 성사 수수료는 <b style="color:var(--primary-ink)">44,000원</b>입니다.</span></div>
               </div>
               <div class="lblrow" style="margin-top:6px"><span class="lbl">추가혜택</span>
                 <div class="yn" data-yn="f2-benbox"><button class="on">있어요</button><button>없어요</button></div>
@@ -562,8 +553,9 @@
             <div class="gapband"></div>
             <div class="sec">
               <span class="lbl">혜택 공개 옵션 선택 (택1)</span>
-              <div class="radio on"><i></i><div><span class="rt">바로 공개 <span class="rec">추천</span></span></div></div>
-              <div class="radio"><i></i><div><span class="rt">버튼 누르면 공개</span></div></div>
+              <div class="radio on" data-rg="f2-open"><i></i><div><span class="rt">바로 공개 <span class="rec">추천</span></span></div></div>
+              <div class="radio" data-rg="f2-open"><i></i><div><span class="rt">버튼 누르면 공개</span></div></div>
+              <div class="radio" data-rg="f2-open"><i></i><div><span class="rt">채팅 상담 후 공개</span></div></div>
               <span class="lbl" style="margin-top:6px">특약 사항</span>
               <div class="hint">· 13개월 이내 해지 시 사은품 가액이 고객에게 청구됩니다.<br>· 3개월 이상 렌탈 요금 체납 시 지원금이 청구됩니다.</div>
               <div class="kv" style="margin-top:4px"><span class="k">거래 성사 수수료</span><span class="v num">44,000원</span></div>
@@ -783,11 +775,7 @@
 
   const flows = {
     f1: { base: 33000, promos: [] },
-    f2: { base: 33000, promos: [
-      { id:++uid, type:'half',   from:1,  to:12, val:50,    name:'반값할인',    fixedName:true },
-      { id:++uid, type:'amount', from:13, to:39, val:10000, name:'타사보상할인', fixedName:true },
-      { id:++uid, type:'exempt', from:40, to:40, val:0,     name:'월요금 면제',  fixedName:true }
-    ] }
+    f2: { base: 33000, promos: [] }
   };
 
   function clampRange(p){
@@ -929,7 +917,7 @@
     const promos = flows.f1.promos;
     const disc = promos.filter(p => p.type !== 'extra');
     const extra = promos.filter(p => p.type === 'extra');
-    const guide = ($('#f1-guidename') && $('#f1-guidename').value.trim()) || '상위 프로모션 명';
+    const guide = '적용 프로모션';
     const openR = $('.radio.on[data-rg="f1-open"] .rt');
     const openText = openR ? openR.childNodes[0].textContent.trim() : '바로 공개';
     const cashV = ($('#f1-cash') && $('#f1-cash').value) || '24';
