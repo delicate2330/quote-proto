@@ -1,879 +1,1226 @@
 <title>견적 제출 프로토타입 — 파트너 편</title>
 <style>
   :root{
-    --bg:#EDEFF4; --surface:#fff; --ink:#1B2233; --muted:#69718A; --line:#E5E8F0; --line2:#EDEFF4;
-    --navy:#414B66; --primary:#5B6CF0; --primary-ink:#3D4CC7; --primary-soft:#EEF0FE;
-    --asis:#B9422F; --tobe:#2F53C0; --tobe-soft:#E9EFFC;
-    --new:#9A6A12; --new-soft:#FBF2DD; --new-line:#E8CE95;
-    --q:#B03A5B; --q-soft:#FAEBF0;
-    --orange:#F2913D; --green:#31C48D;
+    --bg:#EDEFF4; --ink:#1B2233; --muted:#69718A; --line:#E4E6EE;
+    --navy:#222A40; --primary:#4B63F0; --primary-ink:#3D4CC7; --primary-soft:#EEF1FE;
+    --inp-line:#C7CEF5; --ph:#A9B1D6;
+    --asis:#B9422F; --tobe:#2F53C0;
     font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
   button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
-  input{font:inherit;color:inherit}
+  input,select,textarea{font:inherit;color:inherit}
   .num{font-variant-numeric:tabular-nums}
 
-  .top{background:#20263A;color:#fff;padding:20px 28px 0}
+  /* ── page chrome ── */
+  .top{background:var(--navy);color:#fff;padding:20px 28px 0}
   .top h1{font-size:19px;font-weight:700;letter-spacing:-.01em}
   .top .sub{color:#9AA3BF;font-size:12.5px;margin-top:4px}
-  .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-  .legend span{font-size:11.5px;padding:3px 10px;border-radius:99px;font-weight:600}
-  .lg-asis{background:#3A2C2E;color:#F2A08F}
-  .lg-tobe{background:#28324E;color:#9FB4F5}
-  .lg-new{background:#3B3322;color:#EFCB7E}
-  .lg-q{background:#3A2734;color:#F09DB6}
-  .tabs{display:flex;gap:2px;margin-top:18px;flex-wrap:wrap}
-  .tabs button{padding:11px 16px;font-size:13.5px;font-weight:600;color:#8B93AF;border-radius:10px 10px 0 0}
+  .tabs{display:flex;gap:2px;margin-top:16px}
+  .tabs button{padding:11px 18px;font-size:13.5px;font-weight:600;color:#8B93AF;border-radius:10px 10px 0 0}
   .tabs button:hover{color:#C9CFE3}
   .tabs button.on{background:var(--bg);color:var(--ink)}
-  .tabs button:focus-visible,.seg button:focus-visible,.chip:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+  .tabs button:focus-visible,.seg button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 
-  .stage{max-width:1240px;margin:0 auto;padding:22px 28px 60px}
+  .stage{max-width:1080px;margin:0 auto;padding:22px 28px 60px}
   .flow{display:none}
   .flow.on{display:block}
   .flowhead{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
-  .flowhead h2{font-size:16px;font-weight:700;letter-spacing:-.01em}
-  .flowhead .desc{color:var(--muted);font-size:12.5px}
+  .flowhead h2{font-size:16px;font-weight:700}
+  .flowhead .desc{color:var(--muted);font-size:12.5px;font-weight:400}
   .seg{display:flex;background:#DDE1EC;border-radius:10px;padding:3px;margin-left:auto}
   .seg button{padding:7px 22px;border-radius:8px;font-size:13px;font-weight:700;color:var(--muted)}
   .seg button.on-asis{background:#fff;color:var(--asis);box-shadow:0 1px 3px rgba(20,25,50,.12)}
   .seg button.on-tobe{background:#fff;color:var(--tobe);box-shadow:0 1px 3px rgba(20,25,50,.12)}
-
-  .cols{display:flex;gap:22px;align-items:flex-start}
-  .screens{flex:1;min-width:0;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
-  .view{display:none;width:100%}
-  .view.on{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
-
-  .notes{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;position:sticky;top:18px}
-  .note{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .note h4{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
-  .note.n-base h4{color:var(--tobe)} .note.n-new h4{color:var(--new)}
-  .note.n-q{background:var(--q-soft);border-color:#F0CBD7} .note.n-q h4{color:var(--q)}
-  .note ul{list-style:none;display:flex;flex-direction:column;gap:7px}
-  .note li{font-size:12.5px;color:#3C4358;padding-left:14px;position:relative}
-  .note li::before{content:"";position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:99px;background:#B9BFD2}
-  .note.n-new li::before{background:var(--new)} .note.n-q li::before{background:var(--q)}
-  .note b{font-weight:700}
-
-  .bdg{display:inline-flex;align-items:center;gap:3px;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:99px;letter-spacing:.02em;white-space:nowrap;vertical-align:1px}
-  .b-new{background:var(--new-soft);color:var(--new);border:1px solid var(--new-line)}
-  .b-q{background:var(--q-soft);color:var(--q);border:1px solid #EEC3D1}
-  .b-base{background:var(--tobe-soft);color:var(--tobe);border:1px solid #C9D6F3}
-
-  /* phone */
-  .phone{width:352px;background:#0F1320;border-radius:34px;padding:9px;box-shadow:0 16px 38px rgba(18,24,48,.20);flex-shrink:0;position:relative}
-  .phone .scr{background:#fff;border-radius:26px;height:660px;overflow-y:auto;overflow-x:hidden}
-  .statusbar{display:flex;justify-content:space-between;padding:10px 20px 2px;font-size:11px;font-weight:700;color:#232A3F}
-  .appbar{display:flex;align-items:center;gap:8px;padding:8px 16px 8px;background:#fff;position:sticky;top:0;z-index:8;border-bottom:1px solid var(--line2)}
-  .appbar .t{font-size:15px;font-weight:700;flex:1;text-align:center}
-  .appbar .ic{color:#69718A;font-size:16px;width:20px;text-align:center}
-  .prodbar{display:flex;align-items:center;gap:9px;padding:9px 16px;background:#fff;border-bottom:1px solid var(--line2)}
-  .prodbar .thumb{width:34px;height:34px;border-radius:8px;background:#EEF0F5;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-  .prodbar .pt1{font-size:10px;color:#8C93AB}
-  .prodbar .pt2{font-size:12.5px;font-weight:700}
-  .pbody{padding:16px 16px 24px;display:flex;flex-direction:column;gap:16px}
+  .view{display:none}
+  .view.on{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
   .cap{width:100%;text-align:center;font-size:11.5px;color:var(--muted);margin-top:8px}
-  .frameWrap{display:flex;flex-direction:column;align-items:center;max-width:360px}
+  .frameWrap{display:flex;flex-direction:column;align-items:center}
 
-  /* sections */
-  .sec{display:flex;flex-direction:column;gap:10px}
-  .sec-h{font-size:14px;font-weight:800;letter-spacing:-.01em}
-  .sec-h .side{float:right;font-size:12px;font-weight:600;color:#8C93AB}
-  .sub-h{font-size:12px;color:#69718A;font-weight:600}
-  .starred{font-size:11px;color:#8C93AB;font-weight:400}
-  .hr{border-top:1px solid var(--line2);margin:2px 0}
+  /* ── phone frame ── */
+  .phone{width:360px;background:#10131D;border-radius:32px;padding:9px;box-shadow:0 14px 34px rgba(18,24,48,.18);flex-shrink:0;position:relative}
+  .phone .scr{background:#fff;border-radius:24px;height:700px;overflow-y:auto;overflow-x:hidden}
+  .statusbar{display:flex;justify-content:space-between;padding:10px 20px 4px;font-size:11px;font-weight:700;color:#232A3F}
+  .appbar{display:flex;align-items:center;gap:8px;padding:8px 18px 12px;background:#fff;position:sticky;top:0;z-index:5}
+  .appbar .t{font-size:15px;font-weight:700;flex:1}
+  .appbar .ic{color:#333B52;font-size:16px;width:20px}
+  .appbar.center .t{text-align:center}
+  .pbody{display:flex;flex-direction:column}
+  .sec{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+  .gapband{height:8px;background:#F2F3F8}
 
-  .drop{border:1px solid #DADEEA;border-radius:10px;padding:11px 13px;font-size:13.5px;display:flex;justify-content:space-between;align-items:center}
-  .drop .cv{color:#9BA2B8;font-size:12px}
-  .search{border:1px solid #DADEEA;border-radius:10px;padding:11px 13px;font-size:12.5px;color:#A3A9BE;display:flex;justify-content:space-between;align-items:center}
-  .swatches{display:flex;gap:9px}
-  .sw{width:22px;height:22px;border-radius:99px;border:1.5px solid #E0E3ED;cursor:pointer}
-  .sw.on{border:2px solid var(--primary);box-shadow:0 0 0 2px #fff inset}
-  .navypill{background:#414B66;color:#fff;border-radius:99px;padding:12px;text-align:center;font-size:12.5px;font-weight:700;width:100%}
-  .segbig{display:flex;background:#EFF1F6;border-radius:10px;padding:3px}
-  .segbig button{flex:1;padding:9px 4px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--muted)}
-  .segbig button.on{background:#414B66;color:#fff}
-  .betw{display:flex;justify-content:space-between;align-items:center;font-size:12.5px}
-  .betw .k{color:#69718A}
-  .stepper{display:flex;align-items:center;gap:2px;border:1px solid #DADEEA;border-radius:8px;overflow:hidden}
-  .stepper button{width:30px;height:30px;font-size:15px;color:#69718A}
-  .stepper .val{width:34px;text-align:center;font-size:13px;font-weight:700}
+  /* ── product header ── */
+  .prodhead{display:flex;gap:10px;align-items:center;background:#F3F5FB;padding:12px 18px}
+  .prodhead .thumb{width:44px;height:44px;background:#fff;border:1px solid var(--line);border-radius:8px;flex-shrink:0}
+  .prodhead .b1{font-size:11px;color:#8C93AB}
+  .prodhead .b2{font-size:13.5px;font-weight:700}
+  .prodhead .b3{font-size:11.5px;color:var(--primary-ink);font-weight:600}
 
-  .lblrow{display:flex;justify-content:space-between;align-items:center}
-  .yn{display:flex;background:#EFF1F6;border-radius:99px;padding:3px}
-  .yn button{padding:6px 15px;border-radius:99px;font-size:12px;font-weight:700;color:#9198AE}
-  .yn button.on{background:var(--primary);color:#fff}
-  .field{border:1px solid #DADEEA;border-radius:10px;padding:11px 13px;font-size:13px}
-  .field input{border:0;outline:0;width:100%;background:transparent}
-  .field input::placeholder{color:#B0B6C8}
+  /* ── step bar ── */
+  .stepbar{display:flex;align-items:flex-start;background:#F4F5F9;border-radius:12px;padding:12px 14px;margin:0 18px}
+  .stp{display:flex;flex-direction:column;align-items:center;gap:4px;width:58px;flex-shrink:0}
+  .stp i{width:20px;height:20px;border-radius:99px;background:#C9CDDC;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-style:normal}
+  .stp.on i{background:var(--primary)}
+  .stp span{font-size:10px;color:#8C93AB;white-space:nowrap}
+  .stp.on span{color:var(--primary-ink);font-weight:700}
+  .stpline{flex:1;border-top:1.5px dashed #C9CDDC;margin-top:10px}
 
-  .placeholder{border:1.5px dashed #CDD2E0;border-radius:12px;padding:15px 12px;display:flex;flex-direction:column;gap:11px;align-items:center;background:#FBFCFE}
-  .placeholder p{font-size:11.5px;color:#9198AE;text-align:center;line-height:1.5}
-  .addbtn{border:1px solid #D3D8E6;border-radius:9px;padding:10px 16px;font-size:12.5px;font-weight:700;color:#414B66;background:#fff;display:inline-flex;align-items:center;gap:6px}
-  .addbtn:hover{background:#F3F5F9}
-  .addbtn.wide{width:100%;justify-content:center}
-
-  /* promo card */
-  .pcard{border:1px solid #E3E6EF;border-radius:12px;background:#fff;overflow:hidden}
-  .pcard.new{border-color:var(--new-line);box-shadow:0 0 0 3px var(--new-soft)}
-  .pc-h{display:flex;align-items:center;gap:8px;padding:11px 13px}
-  .pc-h .pi{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
-  .pc-h .nm{font-size:13px;font-weight:700}
-  .pc-h .cv{margin-left:auto;color:#B0B6C8;font-size:12px}
-  .pc-b{padding:0 13px 13px;display:flex;flex-direction:column;gap:12px}
-  .fl{display:flex;flex-direction:column;gap:6px}
-  .fl .lb{font-size:11.5px;font-weight:700;color:#4A5169}
-  .fl .lb .st{font-size:10px;color:#9198AE;font-weight:400;margin-left:3px}
-  .inrow{display:flex;align-items:center;gap:6px}
-  .inbox{border:1px solid #DADEEA;border-radius:9px;padding:9px 11px;font-size:13px;flex:1;display:flex;align-items:center;gap:4px}
-  .inbox input{border:0;outline:0;width:100%;background:transparent;text-align:right}
-  .inbox.l input{text-align:left}
-  .inbox input::placeholder{color:#B0B6C8}
-  .inbox .u{color:#8C93AB;font-size:12px;flex-shrink:0}
-  .rtoggle{display:flex;background:#EFF1F6;border-radius:8px;padding:2px}
-  .rtoggle button{padding:5px 11px;border-radius:6px;font-size:11px;font-weight:700;color:#9198AE}
-  .rtoggle button.on{background:#fff;color:var(--primary-ink);box-shadow:0 1px 2px rgba(20,25,50,.12)}
-  .rangerow{display:flex;align-items:center;gap:7px}
-  .rangerow .inbox{padding:8px 9px}
-  .rangerow .inbox input{text-align:center}
-  .cbox{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#69718A;cursor:pointer;white-space:nowrap}
-  .cbox i{width:14px;height:14px;border-radius:4px;border:1.5px solid #C2C7D8;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:9px;color:#fff;background:#fff}
-  .cbox.on i{background:var(--primary);border-color:var(--primary)}
-  .delbtn{background:#F3F4F8;border-radius:8px;padding:9px;text-align:center;font-size:12px;font-weight:600;color:#8189A1;width:100%}
-  .delbtn:hover{background:#EDE7E7;color:var(--asis)}
-  .valtext{font-size:11.5px;color:#8C93AB;text-align:right}
-
-  .benrow{display:flex;justify-content:space-between;align-items:center}
-  .bendot{font-size:12.5px;font-weight:700}
-  .cash{font-size:15px;font-weight:800;color:var(--orange)}
-  .infoline{display:flex;gap:5px;align-items:center;font-size:11px;color:#69718A}
-  .infoline .i{width:14px;height:14px;border-radius:99px;background:#DDE1EC;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .bchips{display:flex;gap:6px;flex-wrap:wrap}
-  .bchip{font-size:11px;padding:5px 9px;border-radius:8px;background:#F1F2F7;color:#565E77;font-weight:600;display:inline-flex;align-items:center;gap:5px}
-  .bchip .arw{color:#B0B6C8}
-  .collect{border:1px solid var(--primary);color:var(--primary-ink);border-radius:10px;padding:10px;text-align:center;font-size:12.5px;font-weight:700;width:100%;display:flex;align-items:center;justify-content:center;gap:6px}
-  .radioline{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:11px 12px;cursor:pointer}
-  .radioline.on{border-color:var(--primary);background:var(--primary-soft)}
-  .radioline.dim{opacity:.5}
-  .radioline i{width:16px;height:16px;border-radius:99px;border:1.5px solid #C2C7D8;flex-shrink:0;margin-top:1px;background:#fff}
-  .radioline.on i{border:5px solid var(--primary)}
-  .radioline .rt{font-size:12.5px;font-weight:700}
-  .radioline .rd{font-size:11px;color:#8C93AB}
-
-  .btn-fill{background:var(--primary);color:#fff;border-radius:11px;padding:13px;text-align:center;font-size:14.5px;font-weight:700;width:100%}
+  /* ── form bits ── */
+  .lbl{font-size:13px;font-weight:700;color:#1F2740}
+  .lblrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .hint{font-size:11px;color:#8C93AB;font-weight:400}
+  .inp{border:1px solid var(--inp-line);border-radius:10px;background:#fff;padding:10px 12px;font-size:13.5px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+  .inp .ph{color:var(--ph)}
+  .sel::after{content:"⌄";color:#8C93AB;font-size:13px}
+  .ninp{border:1px solid var(--inp-line);border-radius:10px;background:#fff;padding:9px 12px;font-size:13.5px;width:100%;text-align:right;font-variant-numeric:tabular-nums}
+  .ninp::placeholder{color:var(--ph)}
+  .ninp:focus{outline:2px solid var(--primary);outline-offset:-1px}
+  .ninp.left{text-align:left}
+  .ninp[readonly]{background:#F4F5F9;border-color:var(--line);color:#333B52;font-weight:600}
+  select.ninp{text-align:left;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8C93AB 50%),linear-gradient(135deg,#8C93AB 50%,transparent 50%);background-position:calc(100% - 16px) 55%,calc(100% - 11px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:28px}
+  .moneyrow{display:flex;align-items:center;gap:7px}
+  .moneyrow .unit{font-size:13px;color:#333B52;font-weight:700;flex-shrink:0}
+  .row2{display:flex;gap:8px}
+  .row2>*{flex:1}
+  .kv{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;gap:8px}
+  .kv .k{color:var(--muted)}
+  .kv .v{font-weight:700;text-align:right}
+  .btn-fill{background:var(--primary);color:#fff;border-radius:12px;padding:14px;text-align:center;font-size:14.5px;font-weight:700;width:100%}
   .btn-fill:hover{background:var(--primary-ink)}
-  .btn-fill.dis{background:#C6CBE0;cursor:not-allowed}
-  .btn-ghost{border:1px solid #D8DCE8;color:#4A5169;border-radius:11px;padding:13px;text-align:center;font-size:14px;font-weight:700;background:#fff}
-  .btn-line{border:1px solid var(--primary);color:var(--primary-ink);border-radius:11px;padding:12px;text-align:center;font-size:13px;font-weight:700;background:#fff;width:100%}
-  .btn-line:hover{background:var(--primary-soft)}
-  .row2{display:flex;gap:8px}.row2>*{flex:1}
+  .btn-ghost{border:1px solid #D8DCE8;color:#4A5169;border-radius:12px;padding:14px;text-align:center;font-size:14.5px;font-weight:700;background:#fff}
+  .btn-mid{border:1.5px solid var(--primary);color:var(--primary-ink);border-radius:10px;padding:11px;text-align:center;font-size:13px;font-weight:700;background:#fff;width:100%}
 
-  .steps{display:flex;align-items:center;gap:3px;padding:10px 16px 2px}
-  .steps .st{display:flex;flex-direction:column;align-items:center;gap:3px}
-  .steps .dot{width:20px;height:20px;border-radius:99px;background:#DBE0EC;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
-  .steps .dot.on{background:var(--primary)}
-  .steps .dot.done{background:var(--primary)}
-  .steps .sl{font-size:8.5px;color:#9198AE;white-space:nowrap}
-  .steps .st.on .sl{color:var(--primary-ink);font-weight:700}
-  .steps .bar{flex:1;height:2px;background:#DBE0EC;margin-bottom:14px}
-  .steps .bar.on{background:var(--primary)}
+  /* 있어요/없어요 */
+  .yn{display:flex;gap:5px;margin-left:auto}
+  .yn button{font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px;background:#EFF1F6;color:#9AA1B8}
+  .yn button.on{background:var(--primary);color:#fff}
 
-  .amber-note{background:var(--new-soft);color:#7A5510;border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.6}
-  .rose-note{background:var(--q-soft);color:#943350;border-radius:10px;padding:12px;font-size:11.5px;line-height:1.6}
-  .gray-note{background:#F1F2F7;color:#565E77;border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.55}
-  .spec{font-size:11px;color:#69718A;line-height:1.7}
+  /* 범위/개별 */
+  .mseg{display:flex;background:#E8EAF1;border-radius:8px;padding:2.5px;margin-left:auto}
+  .mseg button{font-size:11.5px;font-weight:700;padding:4px 12px;border-radius:6px;color:#8C93AB}
+  .mseg button.on{background:#fff;color:#1F2740;box-shadow:0 1px 2px rgba(20,25,50,.14)}
+
+  .check{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;cursor:pointer;color:#4A5169}
+  .check i{width:16px;height:16px;border-radius:4px;border:1.5px solid #C2C7D8;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:10px;background:#fff;color:#fff;flex-shrink:0}
+  .check.on i{background:var(--primary);border-color:var(--primary)}
+  .radio{display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px}
+  .radio i{width:15px;height:15px;border-radius:99px;border:1.5px solid #C2C7D8;flex-shrink:0;margin-top:2px;background:#fff}
+  .radio.on{border-color:var(--primary);background:var(--primary-soft)}
+  .radio.on i{border:4.5px solid var(--primary)}
+  .radio .rt{font-weight:700}
+  .radio .rd{font-size:11px;color:#8C93AB;font-weight:400}
+  .rec{font-size:9.5px;font-weight:700;background:var(--primary);color:#fff;border-radius:99px;padding:1px 7px;margin-left:4px;vertical-align:2px}
+
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:11.5px;padding:5px 11px;border-radius:8px;border:1px solid #D8DCE8;background:#fff;color:#4A5169;font-weight:600}
+  .chip.on{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-ink)}
+  .chip.dim{color:#A3A9BE}
+
+  .callout{border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.6;background:#F4F5F9;color:#565E77}
+  .callout b{font-weight:700}
+
+  /* ── promo cards ── */
+  .promo{border:1px solid #ECEEF5;border-radius:16px;background:#fff;box-shadow:0 3px 12px rgba(24,32,64,.06);padding:14px 15px;display:flex;flex-direction:column;gap:12px}
+  .promo .phead{display:flex;align-items:center;gap:8px}
+  .pi{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+  .pi-half{background:#E7EDFE;color:#3D5AE8}
+  .pi-amt{background:#FDF0DC;color:#DF8F1F}
+  .pi-ex{background:#E2F6E8;color:#2FA45B}
+  .pi-extra{background:#FBEAE6;color:#D8573B}
+  .promo .phead b{font-size:14px}
+  .promo .phead .chev{margin-left:auto;color:#8C93AB;font-size:13px}
+  .promo .frow{display:flex;flex-direction:column;gap:6px}
+  .promo .frow .lblrow .lbl{font-size:12.5px}
+  .promo .inline{display:flex;align-items:center;gap:8px}
+  .promo .autotext{margin-left:auto;font-size:12px;color:#565E77;font-weight:600}
+  .rangewrap{display:flex;align-items:center;gap:8px}
+  .rangebox{flex:1;display:flex;align-items:center;gap:4px;border:1px solid var(--inp-line);border-radius:10px;padding:0 10px}
+  .rangebox input{border:0;width:100%;padding:9px 0;font-size:13px;text-align:center;font-variant-numeric:tabular-nums;min-width:0}
+  .rangebox input:focus{outline:none}
+  .rangebox .dash{color:#8C93AB}
+  .btn-del{background:#F1F2F7;color:#565E77;border-radius:10px;padding:10px;text-align:center;font-size:13px;font-weight:700;width:100%}
+  .btn-del:hover{background:#E7E9F1;color:var(--asis)}
+  .addbox{border:1.5px dashed #C9CDDC;border-radius:14px;padding:14px 12px;display:flex;flex-direction:column;gap:10px;text-align:center}
+  .addbox .at{font-size:11.5px;color:#8C93AB;line-height:1.5}
+  .btn-add{border:1px solid #D8DCE8;border-radius:11px;background:#fff;padding:11px;font-size:13px;font-weight:700;color:#1F2740;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 2px 6px rgba(24,32,64,.05)}
+  .btn-add:hover{border-color:var(--primary);color:var(--primary-ink)}
+  .btn-add .plus{width:17px;height:17px;border-radius:99px;background:#EBEDF4;color:#565E77;font-size:12px;display:inline-flex;align-items:center;justify-content:center}
+
+  /* 구간 별 요금 */
+  .rows{display:flex;flex-direction:column}
+  .rows .rt{font-size:13px;font-weight:700;padding-bottom:4px}
+  .rrow{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:7px 2px;border-top:1px solid #F0F1F6;gap:6px}
+  .rrow .rl{display:flex;align-items:center;flex-wrap:wrap;gap:4px;color:#565E77}
+  .rtag{font-size:10px;font-weight:700;padding:1.5px 7px;border-radius:99px}
+  .tg-half{background:#E7EDFE;color:#3D5AE8}
+  .tg-free{background:#E2F6E8;color:#2FA45B}
+  .tg-amt{background:#FDF0DC;color:#B67614}
+  .tg-extra{background:#FBEAE6;color:#C14E33}
+  .total{display:flex;justify-content:space-between;align-items:center;background:#F7F8FC;border-radius:10px;padding:11px 13px;margin-top:8px}
+  .total b{font-size:15px}
+  .total .sv{color:#C93A3A;font-size:11px;font-weight:700}
 
   /* bottom sheet */
-  .sheet{position:absolute;inset:9px;background:rgba(13,17,28,.5);border-radius:26px;display:none;align-items:flex-end;z-index:40}
+  .sheet{position:absolute;inset:9px;background:rgba(13,17,28,.5);border-radius:24px;display:none;align-items:flex-end;z-index:30}
   .sheet.on{display:flex}
-  .sheet .sh{background:#fff;border-radius:20px 20px 26px 26px;width:100%;padding:16px 16px 20px;display:flex;flex-direction:column;gap:4px;animation:up .18s ease-out}
+  .sheet .sh{background:#fff;border-radius:18px 18px 24px 24px;width:100%;padding:18px 16px;display:flex;flex-direction:column;gap:4px;animation:up .18s ease-out}
   @keyframes up{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
   @media (prefers-reduced-motion:reduce){.sheet .sh{animation:none}}
   .sh .st{display:flex;align-items:center;margin-bottom:8px}
-  .sh .st b{font-size:14.5px}
+  .sh .st b{font-size:15px}
   .sh .st button{margin-left:auto;color:#8C93AB;font-size:16px;padding:2px 6px}
   .opt{display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:12px;text-align:left;width:100%}
   .opt:hover{background:#F3F4F9}
-  .opt .pi{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:800;flex-shrink:0}
-  .opt .ot{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
-  .opt .od{font-size:11px;color:#8C93AB;margin-top:1px}
+  .opt .ot{font-size:14px;font-weight:700}
+  .opt .od{font-size:11.5px;color:#8C93AB}
 
-  /* Claude 검수 graph screen */
-  .cld{background:#F4F5F9;border-radius:0 0 26px 26px;min-height:100%}
-  .cldbar{background:#0F1320;color:#E7E9F2;display:flex;align-items:center;padding:11px 16px;font-size:13px;font-weight:600;gap:8px}
-  .cldbar .r{margin-left:auto;font-size:10.5px;color:#9AA2BC;display:flex;gap:8px;align-items:center}
-  .cldbar .pill{background:#2A3047;border-radius:7px;padding:4px 9px;color:#C9CEE0;font-size:10px}
-  .cldwrap{padding:14px}
-  .hero{background:linear-gradient(135deg,#5B6CF0,#3D3FC0);border-radius:16px;padding:16px;color:#fff;position:relative;overflow:hidden}
-  .hero::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:99px;background:rgba(255,255,255,.08)}
-  .hero .cap2{font-size:11.5px;opacity:.9;display:flex;align-items:center;gap:5px}
-  .hero .big{font-size:32px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
-  .hero .big span{font-size:15px;font-weight:600;opacity:.9}
-  .hero .stats{display:flex;gap:7px;margin-top:13px}
-  .hero .sc{flex:1;background:rgba(255,255,255,.14);border-radius:11px;padding:9px 8px;text-align:center}
-  .hero .sc .l{font-size:9px;opacity:.85}
-  .hero .sc .v{font-size:14px;font-weight:800;margin-top:2px}
-  .cldtabs{display:flex;gap:7px;margin-top:12px}
-  .cldtab{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 4px;text-align:center;font-size:10px;font-weight:700;color:#8C93AB;display:flex;flex-direction:column;align-items:center;gap:4px}
-  .cldtab.on{border:1.5px solid var(--primary);color:var(--primary-ink)}
-  .cldtab .ic{font-size:15px}
-  .cldcard{background:#fff;border:1px solid var(--line);border-radius:14px;margin-top:12px;overflow:hidden}
-  .cldprod{display:flex;align-items:center;gap:10px;padding:13px 14px}
-  .cldprod .th{width:34px;height:34px;border-radius:9px;background:#E7F0FB;display:flex;align-items:center;justify-content:center;font-size:16px}
-  .cldprod .p1{font-size:13px;font-weight:800}
-  .cldprod .p2{font-size:10px;color:#8C93AB;margin-top:1px}
-  .cldchips{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 12px}
-  .cchip{font-size:10px;font-weight:700;padding:4px 9px;border-radius:99px}
-  .cc-p{background:#EEF0FE;color:var(--primary-ink)}
-  .cc-a{background:#FDF0D9;color:#9A6A12}
-  .cc-r{background:#FBEEEB;color:#B9422F}
-  .gtable{width:100%;border-collapse:collapse;font-size:10.5px}
-  .gtable th{background:#EEF0FE;color:var(--primary-ink);font-weight:700;padding:8px 6px;text-align:left;font-size:10px}
-  .gtable th:nth-child(3),.gtable th:nth-child(4){text-align:right}
-  .gtable td{padding:9px 6px;border-top:1px solid #EFF1F6;vertical-align:middle}
-  .gtable td:nth-child(3),.gtable td:nth-child(4){text-align:right;font-weight:700}
-  .gtable .per{font-weight:700}.gtable .permo{font-size:9px;color:#9198AE;font-weight:400}
-  .gtable tr.ex{background:#FBF6E9}
-  .gtag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;margin:1px 0}
-  .gt-p{background:#4E5DE0;color:#fff}.gt-ex{background:var(--orange);color:#fff}.gt-x{background:#FBEEEB;color:#B9422F;display:block;margin-top:2px}
-  .gtable tr.tot td{border-top:2px solid #C9D2F5;background:#F5F7FF;font-weight:800;font-size:11px;color:var(--primary-ink)}
-  .gdisc{color:#C93A3A}
-  .cldtotal{border:1.5px solid var(--primary);border-radius:12px;margin:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
-  .cldtotal .l1{font-size:10px;color:#8C93AB}.cldtotal .l2{font-size:14px;font-weight:800}
-  .cldtotal .rt{text-align:right}.cldtotal .rv{font-size:16px;font-weight:800;color:var(--primary-ink)}
-  .cldtotal .rs{font-size:10px;font-weight:700;color:#C93A3A;background:#FCE9EC;border-radius:6px;padding:2px 7px;margin-top:3px;display:inline-block}
+  /* greeting */
+  .greetbox{border:1px solid var(--inp-line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px}
+  .greetbox textarea{border:0;resize:none;font-size:13.5px;line-height:1.6;min-height:66px;outline:none;width:100%}
+  .greetbox .cnt{font-size:11px;color:#A3A9BE;text-align:right}
+  .infoline{display:flex;gap:7px;font-size:11.5px;color:#69718A;line-height:1.55}
+  .infoline .i{width:15px;height:15px;border-radius:99px;background:#69718A;color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-style:normal}
 
-  /* desktop web */
-  .web{flex:1 1 660px;min-width:620px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 14px 34px rgba(18,24,48,.12)}
+  /* summary (검수) */
+  .sumsec{display:flex;flex-direction:column;gap:2px}
+  .sumsec .sh2{font-size:14px;font-weight:800;padding:6px 0}
+  .sumsec .sg{font-size:12.5px;font-weight:700;color:#333B52;padding:8px 0 2px}
+  .srow{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px solid #F4F5F9;gap:10px}
+  .srow .k{color:#8C93AB}
+  .srow .v{font-weight:700;text-align:right}
+
+  /* AS-IS 전용 */
+  .cash{background:linear-gradient(120deg,#2B3350,#3A4470);border-radius:12px;padding:13px 15px;color:#fff;display:flex;align-items:center;gap:10px}
+  .cash .coin{width:32px;height:32px;border-radius:99px;background:#F5C64C;color:#7A5510;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .cash .t1{font-size:13px;font-weight:700}
+  .cash .t2{font-size:11px;color:#B9C1DC}
+  .pseg{display:flex;background:#EBEDF4;border-radius:10px;padding:3px}
+  .pseg button{flex:1;padding:9px 4px;border-radius:8px;font-size:13px;font-weight:700;color:var(--muted)}
+  .pseg button.on{background:#fff;color:var(--primary-ink);box-shadow:0 1px 2px rgba(20,25,50,.12)}
+  .bigword{font-size:17px;font-weight:500;line-height:1.7}
+  .bigword .box{display:inline-block;border:1.5px solid var(--primary);border-radius:8px;padding:1px 12px;font-weight:800;color:var(--primary-ink);font-variant-numeric:tabular-nums}
+  .exquote{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:#FDF3EF;display:flex;gap:10px;align-items:center}
+  .exquote .price{font-size:15px;font-weight:800;color:#D8573B}
+  .exquote .badge{font-size:10px;font-weight:700;background:#F9CDBD;color:#B04324;border-radius:99px;padding:2px 8px}
+  .monthchips{display:flex;gap:6px;flex-wrap:wrap}
+  .mchip{width:44px;padding:7px 0;border:1px solid #D8DCE8;border-radius:9px;font-size:12px;font-weight:700;text-align:center;color:#4A5169;background:#fff}
+  .mchip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+
+  /* ── desktop mock ── */
+  .web{flex:1 1 660px;min-width:620px;max-width:860px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 14px 34px rgba(18,24,48,.12)}
   .web .bar{display:flex;align-items:center;gap:6px;background:#E8EAF1;padding:9px 13px}
   .web .bar i{width:10px;height:10px;border-radius:99px;background:#C9CDDC}
   .web .bar .url{margin-left:8px;background:#fff;border-radius:6px;font-size:11px;color:#8C93AB;padding:4px 12px;flex:1}
-  .webin{display:flex;min-height:520px}
-  .side{width:158px;background:#20263A;color:#8F97B5;padding:16px 0;flex-shrink:0}
-  .side .logo{color:#fff;font-weight:800;font-size:13.5px;padding:0 16px 14px;letter-spacing:-.01em}
+  .webin{display:flex;min-height:480px}
+  .side{width:158px;background:var(--navy);color:#8F97B5;padding:16px 0;flex-shrink:0}
+  .side .logo{color:#fff;font-weight:800;font-size:13.5px;padding:0 16px 14px}
   .side a{display:block;padding:9px 16px;font-size:12px;text-decoration:none;color:inherit}
   .side a.on{background:#2E3752;color:#fff;font-weight:700;border-left:3px solid var(--primary);padding-left:13px}
   .main{flex:1;padding:18px 22px;background:#F7F8FB;display:flex;flex-direction:column;gap:13px;min-width:0}
-  .main .crumb{font-size:11px;color:#8C93AB}.main h3{font-size:14.5px;font-weight:700}
+  .main .crumb{font-size:11px;color:#8C93AB}
+  .main h3{font-size:14.5px;font-weight:700}
   .wcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:15px 17px;display:flex;flex-direction:column;gap:12px}
   .wrow{display:flex;align-items:flex-start;gap:14px}
-  .wrow .wl{width:150px;flex-shrink:0;font-size:12.5px;font-weight:700;color:#333B52;padding-top:7px}.wrow .wl .req{color:#C93A3A}
+  .wrow .wl{width:160px;flex-shrink:0;font-size:12.5px;font-weight:700;color:#333B52;padding-top:7px}
+  .wrow .wl .req{color:#C93A3A}
   .wrow .wv{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
-  .radio{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#4A5169;cursor:pointer}
-  .radio i{width:14px;height:14px;border-radius:99px;border:1.5px solid #C2C7D8;display:inline-block;background:#fff}
-  .radio.on i{border:4.5px solid var(--primary)}
+  .wradio{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#4A5169;cursor:pointer}
+  .wradio i{width:14px;height:14px;border-radius:99px;border:1.5px solid #C2C7D8;display:inline-block;background:#fff}
+  .wradio.on i{border:4.5px solid var(--primary)}
   .toggle{width:38px;height:21px;border-radius:99px;background:#31C48D;position:relative;display:inline-block;cursor:pointer;transition:background .15s}
   .toggle::after{content:"";position:absolute;right:2.5px;top:2.5px;width:16px;height:16px;border-radius:99px;background:#fff;transition:transform .15s}
-  .toggle.off{background:#C6CBE0}.toggle.off::after{transform:translateX(-14.5px)}
-  .subopt{border-left:2.5px solid var(--new-line);background:#FDFAF1;border-radius:0 9px 9px 0;padding:9px 12px;display:flex;flex-direction:column;gap:5px}
-  .check{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;cursor:pointer}
-  .check i{width:15px;height:15px;border-radius:4px;border:1.5px solid #C2C7D8;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:10px;background:#fff;color:#fff;flex-shrink:0}
-  .check.on i{background:var(--primary);border-color:var(--primary)}
-  .inp{border:1px solid #D8DCE8;border-radius:8px;background:#fff;padding:8px 10px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:6px}
-  .inp .ph{color:#A3A9BE}.inp.sel::after{content:"▾";color:#8C93AB;font-size:11px}
-  .chips{display:flex;gap:6px;flex-wrap:wrap}
-  .chip{font-size:11.5px;padding:5px 11px;border-radius:99px;border:1px solid #D8DCE8;background:#fff;color:#4A5169;font-weight:600}
-  .chip.on{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-ink)}
-  .chip.dim{color:#A3A9BE}.chip.amber.on{background:var(--new-soft);border-color:var(--new-line);color:var(--new)}
-  .kv{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0}.kv .k{color:var(--muted)}.kv .v{font-weight:600}
-  .addr{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;gap:9px;background:#fff;cursor:pointer}
+  .toggle.off{background:#C6CBE0}
+  .toggle.off::after{transform:translateX(-14.5px)}
+  .addr{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;gap:9px;align-items:flex-start;background:#fff;cursor:pointer}
   .addr.on{border-color:var(--primary);background:var(--primary-soft)}
-  .addr .at{font-size:12.5px;font-weight:700}.addr .ad{font-size:11.5px;color:var(--muted)}
+  .addr .at{font-size:12.5px;font-weight:700}
+  .addr .ad{font-size:11.5px;color:var(--muted)}
   .abdg{font-size:9.5px;font-weight:700;background:#EBEDF4;color:#565E77;border-radius:99px;padding:1.5px 7px;margin-left:5px}
-  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 14px;display:flex;flex-direction:column;gap:6px}
-  .callout{border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.6}
-  .co-gray{background:#F1F2F7;color:#565E77}.co-rose{background:var(--q-soft);color:#943350}.co-amber{background:var(--new-soft);color:#7A5510}
-  .cash-asis{background:linear-gradient(120deg,#2B3350,#3A4470);border-radius:11px;padding:12px 14px;color:#fff;display:flex;align-items:center;gap:10px}
-  .cash-asis .coin{width:30px;height:30px;border-radius:99px;background:#F5C64C;color:#7A5510;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
 
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);background:#232A3F;color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:99;box-shadow:0 8px 24px rgba(18,24,48,.3)}
   .toast.on{opacity:1;transform:translateX(-50%)}
 
-  @media (max-width:1080px){
-    .cols{flex-direction:column}
-    .notes{width:100%;position:static;flex-direction:row;flex-wrap:wrap}.notes .note{flex:1 1 260px}
-    .web{min-width:0}
-  }
+  @media (max-width:1080px){.web{min-width:0}}
 </style>
 
 <div class="top">
   <h1>견적 제출 (사용자 별) — 클릭 프로토타입 · 파트너 편</h1>
-  <div class="sub">OPD-82 · 피그마 1차 키비주얼 충실 재현 + 케이티 제안(정률·태그) 델타 · 팀 논의용 (요금 실시간 계산)</div>
-  <div class="legend">
-    <span class="lg-asis">AS-IS 현재</span>
-    <span class="lg-tobe">TO-BE · 피그마 1차 키비주얼</span>
-    <span class="lg-new">✦ 케이티 제안</span>
-    <span class="lg-q">❓ 논의 필요</span>
-  </div>
+  <div class="sub">OPD-82 · 플로우별 AS-IS ↔ TO-BE (1차 키비주얼) · 더미 데이터 · 요금 실시간 계산</div>
   <nav class="tabs" id="tabs">
-    <button class="on" data-f="f1">1️⃣ 견적서 작성 (4스텝)</button>
-    <button data-f="f2">2️⃣ 견적 수정 (상세)</button>
-    <button data-f="f3">3️⃣ 자동견적 (파트너센터)</button>
+    <button class="on" data-f="f1">1️⃣ 견적서 작성</button>
+    <button data-f="f2">2️⃣ 견적 수정</button>
+    <button data-f="f3">3️⃣ 자동견적</button>
     <button data-f="f4">4️⃣ 주문서 수정</button>
   </nav>
 </div>
 
 <div class="stage">
 
-<!-- ═══════ FLOW 1 · 견적서 작성 4스텝 ═══════ -->
+<!-- ════════════ FLOW 1 · 견적서 작성 (4스텝) ════════════ -->
 <section class="flow on" id="f1">
   <div class="flowhead">
-    <h2>견적서 작성 (수동 · 4스텝 위저드)</h2>
-    <span class="desc">파트너 앱 · 월 렌탈료 → 고객 혜택 → 요금·특약 → 견적서 검수(Claude 그래프)</span>
-    <div class="seg" data-flow="f1"><button class="on-asis" data-v="asis">AS-IS</button><button data-v="tobe">TO-BE</button></div>
-  </div>
-  <div class="cols">
-    <div class="screens">
-      <!-- AS-IS -->
-      <div class="view on" data-view="f1-asis">
-        <div class="frameWrap">
-          <div class="phone"><div class="scr">
-            <div class="statusbar"><span>9:41</span><span>●●● ⏻</span></div>
-            <div class="appbar"><span class="ic">✕</span><span class="t">견적서 작성</span><span class="ic"></span></div>
-            <div class="pbody">
-              <div class="cash-asis"><div class="coin">C</div><div><div style="font-size:12.5px;font-weight:700">보유 견적 캐시 3개</div><div style="font-size:11px;color:#B9C1DC">견적 제출 시 캐시 1개가 차감됩니다</div></div></div>
-              <div class="card"><div class="sec-h" style="font-size:13px">요청 제품</div>
-                <div class="kv"><span class="k">제품</span><span class="v">나노직수 정수기 미니</span></div>
-                <div class="kv"><span class="k">관리 방식</span><span class="v">방문관리 · 4개월</span></div>
-                <div class="kv"><span class="k">의무사용기간</span><span class="v">36개월</span></div>
-              </div>
-              <div class="card"><div class="sec-h" style="font-size:13px">반값할인 혜택이 있나요?</div>
-                <div class="segbig" data-oneof><button class="on">아니오</button><button>네, 있어요</button></div>
-                <div class="starred">할인 유형마다 질문이 하나씩 이어집니다 (반값 → 면제 → 지원금…)</div>
-              </div>
-              <div class="gray-note">견적 유형 구분 없음 · 할인이 항목별로 흩어져 입력됨</div>
-              <button class="btn-fill" data-toast="캐시 1개 차감 후 다음 질문으로… (AS-IS 데모)">다음</button>
-            </div>
-          </div></div>
-          <div class="cap">AS-IS · 캐시 차감 + 순차 질문형</div>
-        </div>
-      </div>
-      <!-- TO-BE -->
-      <div class="view" data-view="f1-tobe">
-        <div class="frameWrap">
-          <div class="phone">
-            <div class="scr">
-              <div class="statusbar"><span>9:42</span><span>●●● ⏻</span></div>
-              <div class="appbar"><span class="ic"></span><span class="t">견적서 작성</span><span class="ic">✕</span></div>
-              <div class="prodbar"><div class="thumb">💧</div><div><div class="pt1">코웨이 · CHP-7211N</div><div class="pt2">아이콘2 냉온정 정수기 1대</div></div></div>
-              <div class="steps" id="f1-steps">
-                <div class="st on"><div class="dot on">1</div><div class="sl">월 렌탈료</div></div><div class="bar"></div>
-                <div class="st"><div class="dot">2</div><div class="sl">고객 혜택</div></div><div class="bar"></div>
-                <div class="st"><div class="dot">3</div><div class="sl">요금·특약</div></div><div class="bar"></div>
-                <div class="st"><div class="dot">4</div><div class="sl">견적서 검수</div></div>
-              </div>
-
-              <div class="pbody" id="f1-s1">
-                <div class="amber-note">✦ 견적 캐시 제거 — 제출 허들 없음 (스팸 방지는 발송량 제한으로 대체 <span class="bdg b-q">❓</span>)</div>
-                <div class="sec">
-                  <div class="sec-h">월 요금</div>
-                  <div class="starred">*프로모션이 미적용된 기본 월 렌탈료를 입력해주세요</div>
-                  <div class="inbox"><input class="num" id="f1-base" value="28,400"><span class="u">원</span></div>
-                </div>
-                <div class="sec">
-                  <div class="lblrow"><span class="sec-h">할인 및 추가 요금</span><span class="yn" data-yn="f1"><button class="on">있어요</button><button>없어요</button></span></div>
-                  <div id="f1-on" class="sec">
-                    <div class="fl"><span class="lb">고객 안내명 <span class="st">*필수</span></span><div class="field"><input value="타사보상 고객 전용" placeholder="예시: 신규 고객 전용"></div></div>
-                    <div class="sub-h">할인 요금 구성</div>
-                    <div id="f1-disc" class="sec"></div>
-                    <button class="addbtn wide" data-sheet="f1:disc">＋ 요금 정보 추가</button>
-                    <div class="sub-h" style="margin-top:4px">추가 요금 구성</div>
-                    <div id="f1-extra" class="sec"></div>
-                    <button class="addbtn wide" data-add="f1:extra">＋ 요금 정보 추가</button>
-                  </div>
-                </div>
-                <button class="btn-fill" data-go="f1:2">다음</button>
-              </div>
-
-              <div class="pbody" id="f1-s2" style="display:none">
-                <div class="sec"><div class="sec-h">고객 혜택</div>
-                  <div class="hr"></div>
-                  <div class="benrow"><span class="bendot">• 현금지원금</span><span class="yn" data-yn2><button class="on">있어요</button><button>없어요</button></span></div>
-                  <div class="betw"><span class="k">현금지원금</span><span class="cash num">24만원</span></div>
-                  <div class="infoline"><span class="i">i</span>거래 성사 수수료는 <b class="num">&nbsp;44,000원</b>입니다.</div>
-                  <div class="hr"></div>
-                  <div class="benrow"><span class="bendot">• 추가혜택</span><span class="yn" data-yn2><button class="on">있어요</button><button>없어요</button></span></div>
-                  <div class="fl"><span class="lb">기본 혜택</span><div class="bchips"><span class="bchip">✓ 등록비 면제</span><span class="bchip">✓ 설치가 안내</span></div></div>
-                  <div class="fl"><span class="lb">추가 혜택</span><div class="bchips">
-                    <span class="bchip">네이버포인트 1만원<span class="arw">›</span></span><span class="bchip">스타벅스 기프트콘<span class="arw">›</span></span>
-                    <span class="bchip">700W 전자레인지 증정<span class="arw">›</span></span><span class="bchip">알뜰폰 요금제 1년<span class="arw">›</span></span></div></div>
-                  <button class="collect">✎ 혜택 수집하기</button>
-                </div>
-                <div class="sec"><div class="sub-h">혜택 공개 옵션 선택 (택1)</div>
-                  <div class="infoline"><span class="i">i</span>고객에게 공개된 이후에는 수정이 불가합니다.</div>
-                  <div class="radioline on"><i></i><div><div class="rt">바로 공개</div><div class="rd">고객이 견적서를 받자마자 혜택 확인 가능</div></div></div>
-                  <div class="radioline dim"><i></i><div><div class="rt">버튼 누르면 공개</div><div class="rd">고객이 직접 눌러야 혜택 노출</div></div></div>
-                </div>
-                <div class="row2"><button class="btn-ghost" data-go="f1:1">이전</button><button class="btn-fill" data-go="f1:3">다음</button></div>
-              </div>
-
-              <div class="pbody" id="f1-s3" style="display:none">
-                <div class="sec"><div class="sec-h">요금 및 특약</div>
-                  <div class="fl"><span class="lb">특약 사항</span>
-                    <div class="field" style="min-height:80px;align-items:flex-start"><span class="spec">· 13개월 이내 해지 시 사은품 가액이 고객에게 청구됩니다.<br>· 13개월 이내 해지 시 지원금이 고객에게 청구됩니다.<br>· 3개월 이상 렌탈 요금 체납 시 지원금이 고객에게 청구됩니다.</span></div>
-                  </div>
-                  <div class="fl"><span class="lb">상담 신청 시 첫인사</span>
-                    <div class="field"><span class="spec">안녕하세요 고객님, 저희 딩동댕 렌탈에 상담 신청 주셔서 감사합니다.</span></div>
-                  </div>
-                </div>
-                <div class="row2"><button class="btn-ghost" data-go="f1:2">이전</button><button class="btn-fill" data-go="f1:4">다음</button></div>
-              </div>
-
-              <div id="f1-s4" style="display:none">
-                <div class="cld"><div class="cldwrap" id="f1-cld"></div>
-                  <div style="padding:0 14px 18px"><div class="row2"><button class="btn-ghost" data-go="f1:3">이전</button><button class="btn-fill" data-toast="견적이 발송되었습니다 ✓ (프로토타입)">견적 발송하기</button></div></div>
-                </div>
-              </div>
-            </div>
-            <div class="sheet" id="f1-sheet"></div>
-          </div>
-          <div class="cap">TO-BE · 4스텝 위저드 (요금 카드 추가/편집 → 검수 그래프 실시간)</div>
-        </div>
-      </div>
+    <h2>견적서 작성</h2>
+    <span class="desc">파트너 앱 · 4스텝 (월 렌탈료 → 고객혜택 → 설정 및 특약 → 견적서 검수)</span>
+    <div class="seg" data-flow="f1">
+      <button class="on-asis" data-v="asis">AS-IS</button>
+      <button data-v="tobe">TO-BE</button>
     </div>
-    <aside class="notes">
-      <div class="note n-base"><h4>피그마 1차 키비주얼</h4><ul>
-        <li>4스텝: 월 렌탈료 → 고객 혜택 → 요금·특약 → 견적서 검수</li>
-        <li>할인/추가 요금 <b>카드 구성</b>, 검수 단계 Claude 그래프</li>
-      </ul></div>
-      <div class="note n-new"><h4>✦ 케이티 제안</h4><ul>
-        <li>견적 캐시 제거</li><li>요금 카드에 <b>정률(%) 할인</b> 추가 (바텀시트 ✦)</li>
-      </ul></div>
-      <div class="note n-q"><h4>❓ 논의</h4><ul><li>캐시 대체(발송량 제한)</li><li>정액+정률 계산 순서·cap</li></ul></div>
-    </aside>
+  </div>
+
+  <!-- AS-IS -->
+  <div class="view on" data-view="f1-asis">
+    <div class="frameWrap">
+      <div class="phone"><div class="scr">
+        <div class="statusbar"><span>9:42</span><span>📶 ⏻</span></div>
+        <div class="appbar center"><span class="ic"></span><span class="t">견적서 작성</span><span class="ic">✕</span></div>
+        <div class="prodhead">
+          <div class="thumb"></div>
+          <div><div class="b1">코웨이 | P-350N</div><div class="b2">나노직수 정수기 미니 1대</div><div class="b3">방문관리 | 36개월</div></div>
+        </div>
+        <div class="pbody">
+          <div class="sec">
+            <div class="cash">
+              <div class="coin">C</div>
+              <div><div class="t1">보유 견적 캐시 3개</div><div class="t2">견적 제출 시 캐시 1개가 차감됩니다</div></div>
+            </div>
+          </div>
+          <div class="gapband"></div>
+          <div class="sec">
+            <span class="lbl">반값할인 혜택이 있나요?</span>
+            <div class="pseg" data-oneof><button>아니요</button><button class="on">네, 있어요</button></div>
+            <div style="height:6px"></div>
+            <span class="lbl">할인 적용 기간을 입력해주세요.</span>
+            <div class="bigword">설치 후, <span class="box num">6</span> 개월 동안<br>반값 할인이 적용됩니다.</div>
+            <div class="hint">*발송되는 견적서 예시입니다</div>
+            <div class="exquote">
+              <div>
+                <span class="price num">21,450원</span> <span class="badge">반값할인 6개월</span>
+                <div class="hint">김영빈 회장 ★ 5.0 · 계약 4,540건</div>
+              </div>
+            </div>
+          </div>
+          <div class="gapband"></div>
+          <div class="sec">
+            <span class="lbl">월요금 면제 혜택이 있나요?</span>
+            <div class="pseg" data-oneof><button>아니요</button><button class="on">네, 있어요</button></div>
+            <span class="lbl" style="margin-top:6px">면제 월 선택</span>
+            <div class="monthchips">
+              <button class="mchip on">1회</button><button class="mchip">6회</button><button class="mchip on">13회</button>
+              <button class="mchip">19회</button><button class="mchip on">25회</button><button class="mchip">31회</button><button class="mchip">37회</button>
+            </div>
+            <div class="hint">총 3개월 : 1년차 1개월, 2·3년차 각 1개월</div>
+            <div class="callout">할인 유형(반값 → 면제 → 지원금…)마다 질문 화면이 하나씩 이어지고, 견적 유형(일반/타사/결합) 구분은 없음</div>
+          </div>
+          <div class="sec row2">
+            <button class="btn-ghost">← 이전</button>
+            <button class="btn-fill" data-toast="캐시 1개 차감 후 다음 질문으로… (AS-IS 데모)">다음 →</button>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap">AS-IS · 캐시 차감 + 혜택별 질문형 위저드</div>
+    </div>
+  </div>
+
+  <!-- TO-BE : 4스텝 -->
+  <div class="view" data-view="f1-tobe">
+    <div class="frameWrap">
+      <div class="phone">
+        <div class="scr">
+          <div class="statusbar"><span>9:42</span><span>📶 ⏻</span></div>
+          <div class="appbar"><span class="t">견적서 작성</span><span class="ic">✕</span></div>
+          <div class="prodhead">
+            <div class="thumb"></div>
+            <div><div class="b1">코웨이 | P-350N</div><div class="b2">나노직수 정수기 미니 1대</div><div class="b3">방문관리 | 36개월</div></div>
+          </div>
+          <div style="padding-top:12px">
+            <div class="stepbar" id="f1-stepbar">
+              <div class="stp on" data-s="1"><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div>
+              <div class="stp" data-s="2"><i>2</i><span>고객혜택</span></div><div class="stpline"></div>
+              <div class="stp" data-s="3"><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div>
+              <div class="stp" data-s="4"><i>4</i><span>견적서 검수</span></div>
+            </div>
+          </div>
+          <div class="pbody">
+
+            <!-- STEP 1 -->
+            <div id="f1-s1">
+              <div class="sec">
+                <span class="lbl">월 요금</span>
+                <div class="hint" style="margin-top:-8px">*프로모션이 미적용된 기본 월 렌탈료를 입력해주세요</div>
+                <div class="moneyrow"><input class="ninp num" id="f1-base" type="text" inputmode="numeric" value="33,000"><span class="unit">원</span></div>
+              </div>
+              <div class="sec" style="padding-top:2px">
+                <div class="lblrow"><span class="lbl">할인 및 추가 요금</span>
+                  <div class="yn" data-yn="f1-disc"><button class="on">있어요</button><button>없어요</button></div>
+                </div>
+                <div id="f1-disc" style="display:flex;flex-direction:column;gap:12px">
+                  <div>
+                    <div class="lblrow"><span class="lbl" style="font-size:12.5px">고객 안내명</span><span class="hint">*필수</span></div>
+                    <input class="ninp left" style="margin-top:6px" placeholder="예시 : 신규 고객 전용">
+                  </div>
+                  <span class="lbl" style="font-size:12.5px">할인 요금 구성</span>
+                  <div id="f1-plist" style="display:flex;flex-direction:column;gap:12px"></div>
+                  <div class="addbox">
+                    <div class="at" data-emptyat="f1">요금 정보 추가 시 월 요금에 자동 반영되어<br>고객 화면에 표시됩니다</div>
+                    <button class="btn-add" data-sheet="f1"><span class="plus">＋</span> 요금 정보 추가</button>
+                  </div>
+                  <span class="lbl" style="font-size:12.5px">추가 요금 구성</span>
+                  <div id="f1-xlist" style="display:flex;flex-direction:column;gap:12px"></div>
+                  <div class="addbox">
+                    <div class="at">요금 정보 추가 시 월 요금에 자동 반영되어<br>고객 화면에 표시됩니다</div>
+                    <button class="btn-add" data-add-extra="f1"><span class="plus">＋</span> 요금 정보 추가</button>
+                  </div>
+                  <div class="rows" id="f1-rows-wrap" style="display:none">
+                    <span class="rt">구간 별 요금</span>
+                    <div id="f1-rows"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="sec"><button class="btn-fill" data-go="f1:2">다음</button></div>
+            </div>
+
+            <!-- STEP 2 : 고객혜택 (현금지원금은 인사말보다 앞) -->
+            <div id="f1-s2" style="display:none">
+              <div class="sec">
+                <div class="lblrow"><span class="lbl">현금지원금</span>
+                  <div class="yn" data-yn="f1-cashbox" data-flag="cash"><button class="on">있어요</button><button>없어요</button></div>
+                </div>
+                <div id="f1-cashbox" style="display:flex;flex-direction:column;gap:8px">
+                  <div class="moneyrow"><input class="ninp num" id="f1-cash" type="text" inputmode="numeric" value="24"><span class="unit">만원</span></div>
+                  <div class="infoline"><i class="i">!</i><span>거래 성사 수수료는 <b style="color:var(--primary-ink)">44,000원</b>입니다.</span></div>
+                </div>
+              </div>
+              <div class="gapband"></div>
+              <div class="sec">
+                <div class="lblrow"><span class="lbl">추가혜택</span>
+                  <div class="yn" data-yn="f1-benbox"><button class="on">있어요</button><button>없어요</button></div>
+                </div>
+                <div id="f1-benbox" style="display:flex;flex-direction:column;gap:10px">
+                  <span class="hint" style="font-weight:700;color:#565E77">기본 혜택</span>
+                  <div class="chips"><button class="chip on">🧾 등록비 면제</button><button class="chip on">🛠 설치비 면제</button></div>
+                  <span class="hint" style="font-weight:700;color:#565E77">추가 혜택</span>
+                  <div class="chips">
+                    <button class="chip on">네이버포인트 1만원</button><button class="chip">스타벅스 기프티콘</button>
+                    <button class="chip">7080 안마의자 증정</button><button class="chip">기타 혜택</button>
+                  </div>
+                  <button class="btn-mid">✎ 혜택 수정하기</button>
+                </div>
+              </div>
+              <div class="gapband"></div>
+              <div class="sec">
+                <span class="lbl">혜택 공개 옵션 선택 (택1)</span>
+                <div class="infoline" style="margin-top:-6px"><i class="i">!</i><span>고객에게 공개된 이후에는 수정이 불가합니다.</span></div>
+                <div class="radio on" data-rg="f1-open"><i></i><div><span class="rt">바로 공개 <span class="rec">추천</span></span><div class="rd">고객이 견적서를 받자마자 확인이 가능해요.</div></div></div>
+                <div class="radio" data-rg="f1-open"><i></i><div><span class="rt">버튼 누르면 공개</span><div class="rd">고객이 버튼을 눌러야 혜택이 공개돼요.</div></div></div>
+                <div class="radio" data-rg="f1-open"><i></i><div><span class="rt">채팅 상담 후 공개</span><div class="rd">채팅 상담을 시작하면 공개돼요.</div></div></div>
+              </div>
+              <div class="sec row2">
+                <button class="btn-ghost" data-go="f1:1">이전</button>
+                <button class="btn-fill" data-go="f1:3">다음</button>
+              </div>
+            </div>
+
+            <!-- STEP 3 : 설정 및 특약 -->
+            <div id="f1-s3" style="display:none">
+              <div class="sec">
+                <span class="lbl">특약 사항</span>
+                <div class="greetbox">
+                  <textarea>· 13개월 이내 해지 시 사은품 가액이 고객에게 청구됩니다.
+· 3개월 이상 렌탈 요금 체납 시 사은품 가액이 고객에게 청구됩니다.
+· 13개월 내에 해지 시 지원금이 고객에게 청구됩니다.</textarea>
+                </div>
+              </div>
+              <div class="gapband"></div>
+              <div class="sec">
+                <span class="lbl">거래 성사 수수료 ⓘ</span>
+                <div class="kv"><span class="k">기본 수수료</span><span class="v num">44,000원</span></div>
+                <div class="kv"><span class="k">예상 수수료 총액</span><span class="v num" style="color:var(--primary-ink)">44,000원</span></div>
+                <div class="hint">고객 주문 확정 후 2영업일 이내 청구됩니다</div>
+              </div>
+              <div class="sec row2">
+                <button class="btn-ghost" data-go="f1:2">이전</button>
+                <button class="btn-fill" data-go="f1:4">다음</button>
+              </div>
+            </div>
+
+            <!-- STEP 4 : 견적서 검수 -->
+            <div id="f1-s4" style="display:none">
+              <div class="sec">
+                <span class="lbl" style="font-size:15px">인사말을 적어주세요.</span>
+                <div class="infoline"><i class="i">!</i><span>인사말은 고객이 채팅방에 진입했을 때 보여집니다.<br>정성스러운 인사말로 고객에게 좋은 첫 인상을 남겨보세요.</span></div>
+                <div class="greetbox">
+                  <textarea id="f1-greet" maxlength="255">안녕하세요, 고객님!
+궁금하신 사항 채팅주시면 신속하게 답변 드리겠습니다.</textarea>
+                  <div class="cnt"><span id="f1-cnt">38</span>/255</div>
+                </div>
+                <span class="check" data-toggle style="margin-left:auto"><i></i>이 인사말 다음에도 사용하기</span>
+              </div>
+              <div class="gapband"></div>
+              <div class="sec sumsec">
+                <span class="sh2">고객 요청 내용</span>
+                <span class="sg">고객 정보</span>
+                <div class="srow"><span class="k">이름</span><span class="v">김**님</span></div>
+                <div class="srow"><span class="k">성별 / 연령대</span><span class="v">남성 / 40대</span></div>
+                <span class="sg">요청정보</span>
+                <div class="srow"><span class="k">계약방식</span><span class="v">렌탈</span></div>
+                <div class="srow"><span class="k">의무사용기간<br><span style="font-size:10.5px">(소유권이전)</span></span><span class="v num">36개월 (60개월)</span></div>
+                <div class="srow"><span class="k">관리방식<br><span style="font-size:10.5px">(관리주기)</span></span><span class="v">방문관리 (4개월)</span></div>
+                <span class="sg">기존 사용 제품</span>
+                <div class="srow"><span class="k">브랜드</span><span class="v">코웨이</span></div>
+                <div class="srow"><span class="k">제품종류</span><span class="v">정수기</span></div>
+                <div class="srow"><span class="k">사용기간</span><span class="v">1~2년</span></div>
+              </div>
+              <div class="gapband"></div>
+              <div class="sec sumsec">
+                <span class="sh2">견적서 정보</span>
+                <div class="srow"><span class="k">렌탈사</span><span class="v">LG헬로비전</span></div>
+                <div class="srow"><span class="k">월 렌탈료</span><span class="v num" id="f1-sum-fee">—</span></div>
+                <div class="rows" style="margin-top:6px">
+                  <span class="rt">구간 별 요금</span>
+                  <div id="f1-rows2"></div>
+                </div>
+                <div class="total"><span style="font-size:11.5px;color:var(--muted)">총 납부예상액 <span class="sv num" id="f1-sv2"></span></span><b class="num" id="f1-total2"></b></div>
+                <div id="f1-sum-cash">
+                  <span class="sg">제공 혜택</span>
+                  <div class="srow"><span class="k">현금 지원금</span><span class="v num" style="color:#E8890C" id="f1-sum-cashv">24만원</span></div>
+                </div>
+                <div class="srow"><span class="k">거래 성사 수수료</span><span class="v num">44,000원</span></div>
+              </div>
+              <div class="sec row2">
+                <button class="btn-ghost" data-go="f1:3">이전</button>
+                <button class="btn-fill" data-toast="견적이 발송되었습니다 ✓ (프로토타입)">견적 발송하기</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="sheet" id="f1-sheet" data-sheet-for="f1"></div>
+      </div>
+      <div class="cap">TO-BE · 4스텝 — ⊕ 요금 정보 추가를 눌러보세요</div>
+    </div>
   </div>
 </section>
 
-<!-- ═══════ FLOW 2 · 견적 수정 (상세, 단일 스크롤) ═══════ -->
+<!-- ════════════ FLOW 2 · 견적 수정 ════════════ -->
 <section class="flow" id="f2">
   <div class="flowhead">
-    <h2>견적 수정 (상세 · 견적추가 동일 대응)</h2>
-    <span class="desc">파트너 앱 · 제품 구성 → 요금 → 고객 혜택 → 혜택 공개 (피그마 그대로)</span>
-    <div class="seg" data-flow="f2"><button class="on-asis" data-v="asis">AS-IS</button><button data-v="tobe">TO-BE</button></div>
-  </div>
-  <div class="cols">
-    <div class="screens">
-      <!-- AS-IS -->
-      <div class="view on" data-view="f2-asis">
-        <div class="frameWrap">
-          <div class="phone"><div class="scr">
-            <div class="statusbar"><span>9:41</span><span>●●● ⏻</span></div>
-            <div class="appbar"><span class="ic">‹</span><span class="t">견적 수정</span><span class="ic"></span></div>
-            <div class="pbody">
-              <div class="card"><div class="sec-h" style="font-size:13px">월 요금</div>
-                <div class="kv"><span class="k">월 요금</span><span class="v num" style="color:var(--primary-ink)">32,000 원</span></div>
-                <div class="kv"><span class="k">ㄴ 반값할인 프로모션</span><span class="v"><span class="bdg b-base">적용</span> 6개월</span></div>
-                <div class="starred">반값 외 할인(정액·면제)은 '고객 혜택' 하위에 흩어져 있음</div>
-              </div>
-              <div class="card"><div class="sec-h" style="font-size:13px">프로모션명 <span class="starred">자유 입력</span></div>
-                <div class="field"><span class="spec">여름맞이+타사보상 중복 특별(6개월 반값+1년 1만원 추가할인)…</span></div>
-                <div class="starred" style="color:#B9422F">→ 명칭이 길어지고 제각각 · 집계 불가</div>
-              </div>
-              <div class="card"><div class="sec-h" style="font-size:13px">고객 혜택</div>
-                <div class="kv"><span class="k">요금 면제월</span><span class="v num">1·13·25회차</span></div>
-                <div class="kv"><span class="k">현금지원금</span><span class="v" style="color:var(--orange)">24만원</span></div>
-              </div>
-              <div class="kv" style="padding:0 2px"><span class="k">거래 성사 수수료</span><span class="v num">44,000원</span></div>
-              <button class="btn-fill" data-toast="수정되었습니다 (AS-IS 데모)">수정하기</button>
-            </div>
-          </div></div>
-          <div class="cap">AS-IS · 프로모션명 자유 입력, 할인 흩어짐</div>
-        </div>
-      </div>
-      <!-- TO-BE -->
-      <div class="view" data-view="f2-tobe">
-        <div class="frameWrap">
-          <div class="phone">
-            <div class="scr">
-              <div class="statusbar"><span>9:41</span><span>●●● ⏻</span></div>
-              <div class="appbar"><span class="ic">‹</span><span class="t">견적 수정</span><span class="ic"></span></div>
-              <div class="pbody">
-                <div class="sec"><div class="sec-h">제품 선택</div>
-                  <div class="drop">나노직수 정수기 미니 <span class="cv">▾</span></div>
-                  <div class="search">찾으시는 제품명/모델명을 검색하여 변경해 주세요 <span>🔍</span></div>
-                </div>
-                <div class="sec"><div class="sec-h">색상 선택 <span class="side">오트밀베이지</span></div>
-                  <div class="swatches" id="f2-sw">
-                    <span class="sw" style="background:#EDEDED"></span><span class="sw on" style="background:#E8A87C"></span>
-                    <span class="sw" style="background:#B9C4CE"></span><span class="sw" style="background:#4E5768"></span>
-                    <span class="sw" style="background:#8FB09A"></span><span class="sw" style="background:#C9A2C4"></span>
-                    <span class="sw" style="background:#7E93C4"></span>
-                  </div>
-                </div>
-                <div class="sec"><div class="sec-h">관리 방식 및 주기</div><div class="navypill">렌토리 안심보장 플랜 (1년)</div></div>
-                <div class="sec"><div class="sec-h">의무사용기간</div>
-                  <div class="segbig" data-oneof><button>12개월</button><button>24개월</button><button class="on">36개월</button></div>
-                  <div class="betw"><span class="k">계약기간</span><span>36개월</span></div>
-                </div>
-                <div class="sec"><div class="betw"><span class="sec-h">설치대수</span>
-                  <span class="stepper"><button data-step="-1">−</button><span class="val num" id="f2-qty">1</span><button data-step="1">+</button></span></div>
-                </div>
-                <div class="hr"></div>
-                <div class="sec"><div class="sec-h">렌탈사 선택</div><div class="search" style="color:var(--ink)">LG셀로비전 <span>🔍</span></div></div>
-                <div class="hr"></div>
-                <div class="sec"><div class="sec-h">월 요금</div>
-                  <div class="starred">*프로모션이 미적용된 기본 월 렌탈료를 입력해주세요</div>
-                  <div class="inbox"><input class="num" id="f2-base" value="33,000"><span class="u">원</span></div>
-                </div>
-                <div class="sec">
-                  <div class="lblrow"><span class="sec-h">할인 및 추가 요금</span><span class="yn" data-yn="f2"><button class="on">있어요</button><button>없어요</button></span></div>
-                  <div id="f2-on" class="sec">
-                    <div class="fl"><span class="lb">고객 안내명 <span class="st">*필수</span></span><div class="field"><input placeholder="예시: 신규 고객 전용"></div></div>
-                    <div class="sub-h">할인 요금 구성 <span class="bdg b-new">✦ 태그·정률</span></div>
-                    <div id="f2-disc" class="sec"></div>
-                    <button class="addbtn wide" data-sheet="f2:disc">＋ 요금 정보 추가</button>
-                    <div class="sub-h" style="margin-top:4px">추가 요금 구성</div>
-                    <div id="f2-extra" class="sec"></div>
-                    <button class="addbtn wide" data-add="f2:extra">＋ 요금 정보 추가</button>
-                  </div>
-                </div>
-                <button class="btn-line" data-graph="f2">📊 가격 그래프로 확인 <span class="bdg b-new">✦ 제안</span></button>
-                <div class="hr"></div>
-                <div class="sec"><div class="sec-h">고객 혜택</div>
-                  <div class="benrow"><span class="bendot">• 현금지원금</span><span class="yn" data-yn2><button class="on">있어요</button><button>없어요</button></span></div>
-                  <div class="betw"><span class="k">현금지원금</span><span class="cash num">24만원</span></div>
-                  <div class="infoline"><span class="i">i</span>거래 성사 수수료는 <b class="num">&nbsp;44,000원</b>입니다.</div>
-                  <div class="hr"></div>
-                  <div class="benrow"><span class="bendot">• 추가혜택</span><span class="yn" data-yn2><button class="on">있어요</button><button>없어요</button></span></div>
-                  <div class="bchips"><span class="bchip">✓ 등록비 면제</span><span class="bchip">✓ 설치가 안내</span></div>
-                  <button class="collect">✎ 혜택 수집하기</button>
-                </div>
-                <div class="hr"></div>
-                <div class="sec"><div class="sub-h">혜택 공개 옵션 선택 (택1)</div>
-                  <div class="radioline on"><i></i><div><div class="rt">바로 공개</div><div class="rd">고객이 받자마자 확인 가능</div></div></div>
-                  <div class="radioline dim"><i></i><div><div class="rt">버튼 누르면 공개</div></div></div>
-                </div>
-                <button class="btn-fill" data-toast="견적이 수정되었습니다 ✓ (프로토타입)">수정하기</button>
-              </div>
-            </div>
-            <div class="sheet" id="f2-sheet"></div>
-            <div class="sheet" id="f2-graph"></div>
-          </div>
-          <div class="cap">TO-BE · 피그마 견적 수정 화면 (카드 추가/편집·색상·수량·그래프 동작)</div>
-        </div>
-      </div>
+    <h2>견적 수정 <span class="desc">(견적추가 동일 대응 가능)</span></h2>
+    <div class="seg" data-flow="f2">
+      <button class="on-asis" data-v="asis">AS-IS</button>
+      <button data-v="tobe">TO-BE</button>
     </div>
-    <aside class="notes">
-      <div class="note n-base"><h4>피그마 1차 키비주얼</h4><ul>
-        <li>제품 구성 + 월 요금 + 할인/추가 요금 카드 + 고객 혜택 + 혜택 공개(택1)</li>
-        <li>있어요/없어요 토글로 섹션 게이팅</li>
-      </ul></div>
-      <div class="note n-new"><h4>✦ 케이티 제안</h4><ul>
-        <li>요금 카드에 <b>정률(%) 할인</b> 추가</li>
-        <li>프로모션명 자유입력 → <b>고정 태그셋</b>(카드 상단 태그 선택)</li>
-        <li><b>가격 그래프</b>로 고객 커뮤니케이션</li>
-      </ul></div>
-      <div class="note n-q"><h4>❓ 논의</h4><ul><li>정액+정률 계산 순서·cap</li><li>예외 % 승인 플로우</li><li>고정 태그셋 목록 확정</li></ul></div>
-    </aside>
+  </div>
+
+  <!-- AS-IS -->
+  <div class="view on" data-view="f2-asis">
+    <div class="frameWrap">
+      <div class="phone"><div class="scr">
+        <div class="statusbar"><span>9:42</span><span>📶 ⏻</span></div>
+        <div class="appbar"><span class="ic">‹</span><span class="t" style="text-align:center">견적 수정</span><span class="ic"></span></div>
+        <div class="pbody">
+          <div class="sec">
+            <span class="lbl">제품 선택</span>
+            <div class="inp sel"><span>나노직수 정수기 미니</span></div>
+            <div class="inp"><span class="ph">찾으시는 제품명/모델명을 검색하여 변경해 주세요!</span><span>🔍</span></div>
+            <div class="lblrow"><span class="lbl">색상 선택</span><span class="hint" style="margin-left:auto">오트밀베이지</span></div>
+            <div style="display:flex;gap:9px">
+              <i style="width:20px;height:20px;border-radius:99px;border:2px solid #E8946A;background:#F2B48C"></i>
+              <i style="width:20px;height:20px;border-radius:99px;border:1px solid #D8DCE8;background:#fff"></i>
+              <i style="width:20px;height:20px;border-radius:99px;border:1px solid #D8DCE8;background:#fff"></i>
+              <i style="width:20px;height:20px;border-radius:99px;border:1px solid #D8DCE8;background:#fff"></i>
+              <i style="width:20px;height:20px;border-radius:99px;border:1px solid #D8DCE8;background:#fff"></i>
+            </div>
+            <span class="lbl">관리 방식 및 주기</span>
+            <div style="background:#3E4763;color:#fff;border-radius:99px;padding:8px;text-align:center;font-size:12.5px;font-weight:700">렌트리 안심보장 플랜 (1년)</div>
+            <span class="lbl">의무사용기간</span>
+            <div class="pseg"><button>12개월</button><button>24개월</button><button class="on">36개월</button></div>
+            <div class="kv"><span class="k">계약기간</span><span class="v num">36개월</span></div>
+            <div class="kv"><span class="k">설치대수</span><span class="v num">− 1 ＋</span></div>
+          </div>
+          <div class="gapband"></div>
+          <div class="sec">
+            <span class="lbl">렌탈사 선택</span>
+            <div class="inp"><span>LG헬로비전</span><span>🔍</span></div>
+          </div>
+          <div class="gapband"></div>
+          <div class="sec">
+            <span class="lbl">월 요금</span>
+            <div class="kv"><span class="k">월 요금</span><span class="v num" style="color:var(--primary-ink);text-decoration:underline">32,000 원</span></div>
+            <div class="kv"><span class="k">ㄴ 반값할인 프로모션</span><span class="v"><span style="background:var(--primary);color:#fff;font-size:10.5px;border-radius:99px;padding:2px 8px">적용</span> <span style="color:#9AA1B8;font-size:11px">미적용</span> · <b class="num">6개월</b></span></div>
+            <div class="hint">설치 후, 6개월간 반값 할인이 적용됩니다</div>
+          </div>
+          <div class="gapband"></div>
+          <div class="sec">
+            <span class="lbl">고객 혜택</span>
+            <div class="lblrow"><span class="hint" style="font-weight:700;color:#565E77">· 요금 면제월</span><div class="yn"><button class="on">있어요</button><button>없어요</button></div></div>
+            <div class="hint num">총 3개월 : 1년차 1·3개월, 2년차 5.6개월</div>
+            <button class="btn-mid">✎ 요금 면제월 수정하기</button>
+            <div class="lblrow" style="margin-top:6px"><span class="hint" style="font-weight:700;color:#565E77">· 현금지원금</span><div class="yn"><button class="on">있어요</button><button>없어요</button></div></div>
+            <div class="kv"><span class="k">현금지원금</span><span class="v num" style="color:#E8890C;text-decoration:underline">24만원</span></div>
+            <div class="infoline"><i class="i">!</i><span>거래 성사 수수료는 <b>44,000원</b>입니다.</span></div>
+            <div class="lblrow" style="margin-top:6px"><span class="hint" style="font-weight:700;color:#565E77">· 추가혜택</span><div class="yn"><button class="on">있어요</button><button>없어요</button></div></div>
+            <div class="chips"><button class="chip dim">등록비 면제</button><button class="chip dim">설치비 면제</button><button class="chip dim">네이버포인트 1만원</button><button class="chip dim">기타 혜택</button></div>
+            <button class="btn-mid">✎ 혜택 수정하기</button>
+          </div>
+          <div class="gapband"></div>
+          <div class="sec">
+            <span class="lbl">혜택 공개 옵션 선택 (택1)</span>
+            <div class="infoline" style="margin-top:-6px"><i class="i">!</i><span>고객에게 공개된 이후에는 수정이 불가합니다.</span></div>
+            <div class="radio on"><i></i><div><span class="rt">바로 공개 <span class="rec">추천</span></span></div></div>
+            <div class="radio"><i></i><div><span class="rt">버튼 누르면 공개</span></div></div>
+          </div>
+          <div class="gapband"></div>
+          <div class="sec">
+            <span class="lbl">특약 사항</span>
+            <div class="hint">· 13개월 이내 해지 시 사은품 가액이 고객에게 청구됩니다.<br>· 3개월 이상 렌탈 요금 체납 시 지원금이 청구됩니다.</div>
+            <div class="kv" style="margin-top:4px"><span class="k">거래 성사 수수료</span><span class="v num">44,000원</span></div>
+          </div>
+          <div class="sec"><button class="btn-fill" data-toast="수정되었습니다 (AS-IS 데모)">수정하기</button></div>
+        </div>
+      </div></div>
+      <div class="cap">AS-IS · 반값할인만 프로모션, 면제월·지원금은 '고객 혜택' 하위에 분산</div>
+    </div>
+  </div>
+
+  <!-- TO-BE -->
+  <div class="view" data-view="f2-tobe">
+    <div class="frameWrap">
+      <div class="phone">
+        <div class="scr">
+          <div class="statusbar"><span>9:42</span><span>📶 ⏻</span></div>
+          <div class="appbar"><span class="ic">‹</span><span class="t" style="text-align:center">견적 수정</span><span class="ic"></span></div>
+          <div class="pbody">
+            <div class="sec">
+              <span class="lbl">제품 선택</span>
+              <div class="inp sel"><span>나노직수 정수기 미니</span></div>
+              <div class="lblrow"><span class="lbl">색상 선택</span><span class="hint" style="margin-left:auto">오트밀베이지</span></div>
+              <div style="display:flex;gap:9px">
+                <i style="width:20px;height:20px;border-radius:99px;border:2px solid #E8946A;background:#F2B48C"></i>
+                <i style="width:20px;height:20px;border-radius:99px;border:1px solid #D8DCE8;background:#fff"></i>
+                <i style="width:20px;height:20px;border-radius:99px;border:1px solid #D8DCE8;background:#fff"></i>
+              </div>
+              <span class="lbl">의무사용기간</span>
+              <div class="pseg"><button>12개월</button><button>24개월</button><button class="on">36개월</button></div>
+              <span class="lbl">렌탈사 선택</span>
+              <div class="inp"><span>LG헬로비전</span><span>🔍</span></div>
+            </div>
+            <div class="gapband"></div>
+            <div class="sec">
+              <span class="lbl">월 요금</span>
+              <div class="hint" style="margin-top:-8px">*프로모션이 미적용된 기본 월 렌탈료를 입력해주세요</div>
+              <div class="moneyrow"><input class="ninp num" id="f2-base" type="text" inputmode="numeric" value="33,000"><span class="unit">원</span></div>
+            </div>
+            <div class="gapband"></div>
+            <div class="sec">
+              <div class="lblrow"><span class="lbl">할인 및 추가 요금</span>
+                <div class="yn" data-yn="f2-disc"><button class="on">있어요</button><button>없어요</button></div>
+              </div>
+              <div id="f2-disc" style="display:flex;flex-direction:column;gap:12px">
+                <div>
+                  <div class="lblrow"><span class="lbl" style="font-size:12.5px">고객 안내명</span><span class="hint">*필수</span></div>
+                  <input class="ninp left" style="margin-top:6px" value="신규 고객 전용">
+                </div>
+                <span class="lbl" style="font-size:12.5px">할인 요금 구성</span>
+                <div id="f2-plist" style="display:flex;flex-direction:column;gap:12px"></div>
+                <div class="addbox">
+                  <div class="at" data-emptyat="f2">요금 정보 추가 시 월 요금에 자동 반영되어<br>고객 화면에 표시됩니다</div>
+                  <button class="btn-add" data-sheet="f2"><span class="plus">＋</span> 요금 정보 추가</button>
+                </div>
+                <span class="lbl" style="font-size:12.5px">추가 요금 구성</span>
+                <div id="f2-xlist" style="display:flex;flex-direction:column;gap:12px"></div>
+                <div class="addbox">
+                  <div class="at">요금 정보 추가 시 월 요금에 자동 반영되어<br>고객 화면에 표시됩니다</div>
+                  <button class="btn-add" data-add-extra="f2"><span class="plus">＋</span> 요금 정보 추가</button>
+                </div>
+                <div class="rows" id="f2-rows-wrap" style="display:none">
+                  <span class="rt">구간 별 요금</span>
+                  <div id="f2-rows"></div>
+                  <div class="total"><span style="font-size:11.5px;color:var(--muted)">총 납부예상액 <span class="sv num" id="f2-sv"></span></span><b class="num" id="f2-total"></b></div>
+                </div>
+              </div>
+            </div>
+            <div class="gapband"></div>
+            <div class="sec">
+              <div class="lblrow"><span class="lbl">현금지원금</span>
+                <div class="yn" data-yn="f2-cashbox"><button class="on">있어요</button><button>없어요</button></div>
+              </div>
+              <div id="f2-cashbox" style="display:flex;flex-direction:column;gap:8px">
+                <div class="moneyrow"><input class="ninp num" type="text" inputmode="numeric" value="24"><span class="unit">만원</span></div>
+                <div class="infoline"><i class="i">!</i><span>거래 성사 수수료는 <b style="color:var(--primary-ink)">44,000원</b>입니다.</span></div>
+              </div>
+              <div class="lblrow" style="margin-top:6px"><span class="lbl">추가혜택</span>
+                <div class="yn" data-yn="f2-benbox"><button class="on">있어요</button><button>없어요</button></div>
+              </div>
+              <div id="f2-benbox" style="display:flex;flex-direction:column;gap:10px">
+                <div class="chips"><button class="chip on">등록비 면제</button><button class="chip on">설치비 면제</button><button class="chip on">네이버포인트 1만원</button><button class="chip">기타 혜택</button></div>
+                <button class="btn-mid">✎ 혜택 수정하기</button>
+              </div>
+            </div>
+            <div class="gapband"></div>
+            <div class="sec">
+              <span class="lbl">혜택 공개 옵션 선택 (택1)</span>
+              <div class="radio on"><i></i><div><span class="rt">바로 공개 <span class="rec">추천</span></span></div></div>
+              <div class="radio"><i></i><div><span class="rt">버튼 누르면 공개</span></div></div>
+              <span class="lbl" style="margin-top:6px">특약 사항</span>
+              <div class="hint">· 13개월 이내 해지 시 사은품 가액이 고객에게 청구됩니다.<br>· 3개월 이상 렌탈 요금 체납 시 지원금이 청구됩니다.</div>
+              <div class="kv" style="margin-top:4px"><span class="k">거래 성사 수수료</span><span class="v num">44,000원</span></div>
+            </div>
+            <div class="sec"><button class="btn-fill" data-toast="견적이 수정되었습니다 ✓ (프로토타입)">수정하기</button></div>
+          </div>
+        </div>
+        <div class="sheet" id="f2-sheet" data-sheet-for="f2"></div>
+      </div>
+      <div class="cap">TO-BE · 할인/추가 요금 카드 구성 — 값·기간 수정 시 구간 요금 재계산</div>
+    </div>
   </div>
 </section>
 
-<!-- ═══════ FLOW 3 · 자동견적 (web) ═══════ -->
+<!-- ════════════ FLOW 3 · 자동견적 ════════════ -->
 <section class="flow" id="f3">
-  <div class="flowhead"><h2>자동견적 수정</h2><span class="desc">파트너센터 웹 · 저장견적 동일 대응</span>
-    <div class="seg" data-flow="f3"><button class="on-asis" data-v="asis">AS-IS</button><button data-v="tobe">TO-BE</button></div></div>
-  <div class="cols">
-    <div class="screens">
-      <div class="view on" data-view="f3-asis">
-        <div class="web"><div class="bar"><i></i><i></i><i></i><span class="url">partner.rentre.kr / 자동견적 관리</span></div>
-          <div class="webin">
-            <div class="side"><div class="logo">rent're 파트너센터</div><a href="#" onclick="return false">견적 관리</a><a href="#" onclick="return false">저장 견적 관리</a><a class="on" href="#" onclick="return false">자동 발송 관리</a></div>
-            <div class="main"><div class="crumb">자동견적 관리 › [코웨이] 아이콘 정수기</div><h3>견적 내용 설정</h3>
-              <div class="wcard">
-                <div class="wrow"><div class="wl">자동 견적 발송</div><div class="wv"><span class="toggle"></span></div></div>
-                <div class="wrow"><div class="wl">재렌탈 고객 대상</div><div class="wv" style="flex-direction:row;gap:14px"><span class="radio on" data-rg="a-re"><i></i>미발송</span><span class="radio" data-rg="a-re"><i></i>발송</span></div></div>
-                <div class="wrow"><div class="wl">리스크 고객 대상</div><div class="wv" style="flex-direction:row;gap:14px"><span class="radio on" data-rg="a-ri"><i></i>미발송</span><span class="radio" data-rg="a-ri"><i></i>발송</span></div></div>
-              </div>
-              <div class="wcard">
-                <div class="wrow"><div class="wl">월 렌탈료 <span class="req">*</span></div><div class="wv" style="flex-direction:row;align-items:center;gap:10px"><div class="inp num" style="width:150px;justify-content:flex-end"><span>30,900</span><span style="color:#8C93AB">원</span></div><span style="font-size:11.5px;color:#8C93AB">→ 수수료 <b class="num" style="color:var(--primary-ink)">66,000원</b></span></div></div>
-                <div class="wrow"><div class="wl">ㄴ 반값할인</div><div class="wv" style="flex-direction:row;gap:10px"><span class="chip on" data-cg="a-h">적용</span><span class="chip" data-cg="a-h">미적용</span></div></div>
-                <div class="wrow"><div class="wl">계약시 혜택 구성 <span class="req">*</span></div><div class="wv"><div class="chips"><button class="chip on">월요금 면제</button><button class="chip on">현금 지원</button><button class="chip on">추가 혜택</button></div></div></div>
-              </div>
-              <button class="btn-fill" style="align-self:flex-end;width:auto;padding:9px 34px;font-size:13px" data-toast="저장되었습니다 (AS-IS 데모)">저장</button>
-            </div>
-          </div>
+  <div class="flowhead">
+    <h2>자동견적 <span class="desc">(저장견적 동일 대응 가능)</span></h2>
+    <div class="seg" data-flow="f3">
+      <button class="on-asis" data-v="asis">AS-IS</button>
+      <button data-v="tobe">TO-BE</button>
+    </div>
+  </div>
+
+  <!-- AS-IS -->
+  <div class="view on" data-view="f3-asis">
+    <div class="web">
+      <div class="bar"><i></i><i></i><i></i><span class="url">partner.rentre.kr / 자동견적 관리</span></div>
+      <div class="webin">
+        <div class="side">
+          <div class="logo">rent're 파트너센터</div>
+          <a href="#" onclick="return false">견적 관리</a>
+          <a href="#" onclick="return false">저장 견적 관리</a>
+          <a class="on" href="#" onclick="return false">자동 발송 관리</a>
         </div>
-        <div class="cap" style="flex-basis:100%">AS-IS · 발송 대상 조건 없음</div>
-      </div>
-      <div class="view" data-view="f3-tobe">
-        <div class="web"><div class="bar"><i></i><i></i><i></i><span class="url">partner.rentre.kr / 자동견적 관리</span></div>
-          <div class="webin">
-            <div class="side"><div class="logo">rent're 파트너센터</div><a href="#" onclick="return false">견적 관리</a><a href="#" onclick="return false">저장 견적 관리</a><a class="on" href="#" onclick="return false">자동 발송 관리</a></div>
-            <div class="main"><div class="crumb">자동견적 관리 › [코웨이] 아이콘 정수기</div><h3>견적 내용 설정</h3>
-              <div class="wcard">
-                <div class="wrow"><div class="wl">자동 견적 발송</div><div class="wv"><span class="toggle"></span></div></div>
-                <div class="wrow"><div class="wl">재렌탈 고객 대상</div><div class="wv">
-                  <div style="display:flex;gap:14px"><span class="radio" data-rg="t-re" data-show-off="reSub"><i></i>미발송</span><span class="radio on" data-rg="t-re" data-show="reSub"><i></i>발송</span></div>
-                  <div class="subopt" id="reSub"><span class="check on" id="brandLimit"><i>✓</i>같은 브랜드 렌탈 이력 고객에게만 발송 <span class="bdg b-new">✦ 제안</span></span><span style="font-size:11px;color:#9A6A12">동일 브랜드 계약 이력 고객으로 한정</span></div>
-                </div></div>
-                <div class="wrow"><div class="wl">리스크 고객 대상</div><div class="wv"><div style="display:flex;gap:14px"><span class="radio on" data-rg="t-ri"><i></i>미발송</span><span class="radio" data-rg="t-ri"><i></i>발송</span></div><div class="callout co-rose" style="max-width:420px">❓ '리스크 고객' 기준 미정 → <b>별도 백로그</b> 분리 제안</div></div></div>
-              </div>
-              <div class="wcard">
-                <div class="wrow"><div class="wl">월 렌탈료 <span class="req">*</span></div><div class="wv" style="flex-direction:row;align-items:center;gap:10px"><div class="inp num" style="width:150px;justify-content:flex-end"><span>30,900</span><span style="color:#8C93AB">원</span></div><span style="font-size:11.5px;color:#8C93AB">일반(신규) 기준 <span class="bdg b-new">✦</span></span></div></div>
-                <div class="wrow"><div class="wl">고객 안내명</div><div class="wv"><div class="inp" style="max-width:340px"><span class="ph">예시: 신규 고객 전용</span></div><span style="font-size:11px;color:#943350">❓ 표기 방식은 상세견적 '태그' 결정에 종속</span></div></div>
-                <div class="wrow"><div class="wl">프로모션 혜택 <span class="bdg b-base">1차 시안</span></div><div class="wv"><div class="chips"><button class="chip on">½ 반값</button><button class="chip on">₩ 금액</button><button class="chip on">免 면제</button><button class="chip amber on">% 정률 ✦</button><button class="chip">＋ 추가요금</button></div><span style="font-size:11px;color:#8C93AB">수동 견적과 동일 카드 구성 일원화</span></div></div>
-              </div>
-              <button class="btn-fill" style="align-self:flex-end;width:auto;padding:9px 34px;font-size:13px" data-toast="자동견적 설정이 저장되었습니다 ✓">저장</button>
-            </div>
+        <div class="main">
+          <div class="crumb">자동견적 관리 › 제품별 상세 › [코웨이] 아이콘 정수기 (냉온정) | 방문관리 (4개월 주기) | 의무사용 36개월 | 계약 60개월</div>
+          <h3>견적 내용 설정</h3>
+          <div class="wcard">
+            <div class="wrow"><div class="wl">자동 견적 발송 여부</div><div class="wv"><span class="toggle" role="switch" aria-checked="true" tabindex="0"></span></div></div>
+            <div class="wrow"><div class="wl">재렌탈 고객 대상 발송 (?)</div><div class="wv" style="flex-direction:row;gap:14px"><span class="wradio on" data-rg="a-re"><i></i>미발송</span><span class="wradio" data-rg="a-re"><i></i>발송</span></div></div>
+            <div class="wrow"><div class="wl">리스크 고객 대상 발송 (?)</div><div class="wv" style="flex-direction:row;gap:14px"><span class="wradio on" data-rg="a-risk"><i></i>미발송</span><span class="wradio" data-rg="a-risk"><i></i>발송</span></div></div>
           </div>
+          <div class="wcard">
+            <div class="wrow"><div class="wl">렌탈사 <span class="req">*</span></div><div class="wv"><div class="inp sel" style="max-width:220px"><span>코웨이</span></div></div></div>
+            <div class="wrow"><div class="wl">월 렌탈료 <span class="req">*</span></div><div class="wv" style="flex-direction:row;align-items:center;gap:10px"><div class="inp num" style="width:150px;justify-content:flex-end"><span>30,900</span><span style="color:#8C93AB">원</span></div><span style="font-size:11.5px;color:#8C93AB">→ 거래성사시 수수료 <b class="num" style="color:var(--primary-ink)">66,000원</b></span></div></div>
+            <div class="wrow"><div class="wl">ㄴ 반값할인 프로모션</div><div class="wv" style="flex-direction:row;align-items:center;gap:10px"><span class="chip on">적용가</span><span class="chip">미적용</span><span style="font-size:11.5px;color:#8C93AB">설치 후 <b class="num">12</b>개월 동안 반값 할인 적용</span></div></div>
+            <div class="wrow"><div class="wl">계약시 혜택 구성 <span class="req">*</span></div><div class="wv"><div class="chips"><button class="chip on">월요금 면제</button><button class="chip on">현금 지원</button><button class="chip on">추가혜택</button></div></div></div>
+            <div class="wrow"><div class="wl">월 요금 면제 <span class="req">*</span></div><div class="wv"><div class="inp sel" style="max-width:220px"><span class="num">3회 ( 13 / 25 / 37 )</span></div></div></div>
+            <div class="wrow"><div class="wl">안전거래 지원금 <span class="req">*</span></div><div class="wv" style="flex-direction:row;align-items:center;gap:10px"><div class="inp num" style="width:110px;justify-content:flex-end"><span>32</span><span style="color:#8C93AB">만원</span></div><span style="font-size:11.5px;color:var(--primary-ink)">(설치완료일 기준 당일 지급)</span></div></div>
+            <div class="wrow"><div class="wl">기본 혜택 <span class="req">*</span></div><div class="wv"><div class="chips"><button class="chip on">설치비 면제</button><button class="chip on">등록비 면제</button></div></div></div>
+            <div class="wrow"><div class="wl">추가 혜택 <span class="req">*</span></div><div class="wv"><div class="chips"><button class="chip on">✓ 생활가전 3종 중 1종 선택</button><button class="chip on">✓ 알뜰폰 요금제 1년 무료</button><button class="chip on">✓ 네이버포인트 1만원 지급</button></div></div></div>
+            <div class="wrow"><div class="wl">혜택 관련 특약사항 (선택)</div><div class="wv"><div class="inp" style="align-items:flex-start"><span style="font-size:12px;color:#4A5169">· 13개월내 3개월 이상 체납시 지원금이 고객에게 청구됩니다.<br>· 13개월내 해지시 지원금이 고객에게 청구됩니다.</span></div></div></div>
+            <div class="wrow"><div class="wl">혜택 공개 방식 <span class="req">*</span></div><div class="wv" style="flex-direction:row;gap:14px"><span class="wradio" data-rg="a-open"><i></i>바로 공개</span><span class="wradio on" data-rg="a-open"><i></i>버튼 누르면 공개</span><span class="wradio" data-rg="a-open"><i></i>채팅 상담 후 공개</span></div></div>
+            <div class="wrow"><div class="wl">상단 신청서 첫인사</div><div class="wv"><div class="inp" style="align-items:flex-start"><span style="font-size:12px;color:#4A5169">안녕하세요 고객님,<br>저희 딩동댕 렌탈에 상담 신청주셔서 감사합니다.<br>문의사항을 말씀주시면 최대한 빠르게 답변드리겠습니다.</span></div></div></div>
+          </div>
+          <button class="btn-fill" style="align-self:center;padding:9px 60px;font-size:13px;width:auto" data-toast="저장되었습니다 (AS-IS 데모)">저장</button>
         </div>
-        <div class="cap" style="flex-basis:100%">TO-BE · 재렌탈 브랜드 한정 + 정률 + 구성 일원화</div>
       </div>
     </div>
-    <aside class="notes">
-      <div class="note n-new"><h4>✦ 케이티 제안</h4><ul><li>재렌탈 = 같은 브랜드 구매 이력 한정</li><li>정률 추가·구성 일원화</li></ul></div>
-      <div class="note n-q"><h4>❓ 논의</h4><ul><li>리스크 고객 → 별도 백로그</li><li>재렌탈 데이터 식별 가능 여부</li></ul></div>
-    </aside>
+    <div class="cap" style="flex-basis:100%">AS-IS · 반값할인만 프로모션 항목, 면제·지원금·혜택이 항목별 분산</div>
+  </div>
+
+  <!-- TO-BE -->
+  <div class="view" data-view="f3-tobe">
+    <div class="web">
+      <div class="bar"><i></i><i></i><i></i><span class="url">partner.rentre.kr / 자동견적 관리</span></div>
+      <div class="webin">
+        <div class="side">
+          <div class="logo">rent're 파트너센터</div>
+          <a href="#" onclick="return false">견적 관리</a>
+          <a href="#" onclick="return false">저장 견적 관리</a>
+          <a class="on" href="#" onclick="return false">자동 발송 관리</a>
+        </div>
+        <div class="main">
+          <div class="crumb">자동견적 관리 › 제품별 상세 › [코웨이] 아이콘 정수기 (냉온정) | 방문관리 (4개월 주기) | 의무사용 36개월 | 계약 60개월</div>
+          <h3>견적 내용 설정</h3>
+          <div class="wcard">
+            <div class="wrow"><div class="wl">자동 견적 발송 여부</div><div class="wv"><span class="toggle" role="switch" aria-checked="true" tabindex="0"></span></div></div>
+            <div class="wrow"><div class="wl">재렌탈 고객 대상 발송 (?)</div><div class="wv" style="flex-direction:row;gap:14px"><span class="wradio on" data-rg="t-re"><i></i>미발송</span><span class="wradio" data-rg="t-re"><i></i>발송</span></div></div>
+            <div class="wrow"><div class="wl">리스크 고객 대상 발송 (?)</div><div class="wv" style="flex-direction:row;gap:14px"><span class="wradio on" data-rg="t-risk"><i></i>미발송</span><span class="wradio" data-rg="t-risk"><i></i>발송</span></div></div>
+          </div>
+          <div class="wcard">
+            <div class="wrow"><div class="wl">렌탈사 <span class="req">*</span></div><div class="wv"><div class="inp sel" style="max-width:220px"><span>코웨이</span></div></div></div>
+            <div class="wrow"><div class="wl">월 렌탈료 <span class="req">*</span></div><div class="wv" style="flex-direction:row;align-items:center;gap:10px"><div class="inp num" style="width:150px;justify-content:flex-end"><span>30,900</span><span style="color:#8C93AB">원</span></div><span style="font-size:11.5px;color:#8C93AB">→ 거래성사시 수수료 <b class="num" style="color:var(--primary-ink)">66,000원</b></span></div></div>
+            <div class="wrow"><div class="wl">계약시 혜택 구성</div><div class="wv">
+              <span style="font-size:12.5px;font-weight:700">프로모션 혜택</span>
+              <div style="max-width:340px;display:flex;flex-direction:column;gap:4px">
+                <span style="font-size:11.5px;color:#8C93AB">고객 안내명 *필수</span>
+                <input class="ninp left" placeholder="예시 : 신규 고객 전용">
+              </div>
+              <span style="font-size:11.5px;color:#8C93AB;margin-top:4px">프로모션 구성</span>
+              <div style="display:flex;flex-direction:column;gap:10px;max-width:420px">
+                <div class="promo"><div class="phead"><span class="pi pi-half">½</span><b>반값 할인</b><span class="chev">⌄</span></div>
+                  <div class="kv"><span class="k">프로모션명</span><span class="v">반값할인</span></div>
+                  <div class="kv"><span class="k">적용 기간</span><span class="v num">1개월 ~ 12개월</span></div>
+                </div>
+                <div class="promo"><div class="phead"><span class="pi pi-amt">₩</span><b>금액 할인</b><span class="chev">⌄</span></div>
+                  <div class="kv"><span class="k">프로모션명</span><span class="v">타사보상할인</span></div>
+                  <div class="kv"><span class="k">할인 금액 / 기간</span><span class="v num">-10,000원 · 13~39개월</span></div>
+                </div>
+                <div class="promo"><div class="phead"><span class="pi pi-ex">免</span><b>월 요금 면제</b><span class="chev">⌄</span></div>
+                  <div class="kv"><span class="k">프로모션명</span><span class="v">월요금 면제</span></div>
+                  <div class="kv"><span class="k">면제 회차</span><span class="v num">40회차</span></div>
+                </div>
+                <button class="btn-add" data-toast="프로모션 구성은 '견적서 작성' 탭에서 동일 컴포넌트로 동작합니다"><span class="plus">＋</span> 요금 정보 추가</button>
+              </div>
+            </div></div>
+            <div class="wrow"><div class="wl">안전거래 지원금 <span class="req">*</span></div><div class="wv" style="flex-direction:row;align-items:center;gap:10px"><div class="inp num" style="width:110px;justify-content:flex-end"><span>32</span><span style="color:#8C93AB">만원</span></div><span style="font-size:11.5px;color:var(--primary-ink)">(설치완료일 기준 당일 지급)</span></div></div>
+            <div class="wrow"><div class="wl">기본 혜택 <span class="req">*</span></div><div class="wv"><div class="chips"><button class="chip on">설치비 면제</button><button class="chip on">등록비 면제</button></div></div></div>
+            <div class="wrow"><div class="wl">추가 혜택 <span class="req">*</span></div><div class="wv"><div class="chips"><button class="chip on">✓ 생활가전 3종 중 1종 선택</button><button class="chip on">✓ 알뜰폰 요금제 1년 무료</button><button class="chip on">✓ 네이버포인트 1만원 지급</button></div></div></div>
+            <div class="wrow"><div class="wl">혜택 공개 방식 <span class="req">*</span></div><div class="wv" style="flex-direction:row;gap:14px"><span class="wradio" data-rg="t-open"><i></i>바로 공개</span><span class="wradio on" data-rg="t-open"><i></i>버튼 누르면 공개</span><span class="wradio" data-rg="t-open"><i></i>채팅 상담 후 공개</span></div></div>
+            <div class="wrow"><div class="wl">상단 신청서 첫인사</div><div class="wv"><div class="inp" style="align-items:flex-start"><span style="font-size:12px;color:#4A5169">안녕하세요 고객님,<br>저희 딩동댕 렌탈에 상담 신청주셔서 감사합니다.</span></div></div></div>
+          </div>
+          <button class="btn-fill" style="align-self:center;padding:9px 60px;font-size:13px;width:auto" data-toast="자동견적 설정이 저장되었습니다 ✓ (프로토타입)">저장</button>
+        </div>
+      </div>
+    </div>
+    <div class="cap" style="flex-basis:100%">TO-BE · '계약시 혜택 구성'을 프로모션 카드 구성으로 통합 (수동 견적과 동일 컴포넌트)</div>
   </div>
 </section>
 
-<!-- ═══════ FLOW 4 · 주문서 수정 ═══════ -->
+<!-- ════════════ FLOW 4 · 주문서 수정 ════════════ -->
 <section class="flow" id="f4">
-  <div class="flowhead"><h2>견적 수정 (파트너 → 고객 주문서)</h2><span class="desc">파트너센터 웹 · Notion 아이데이션 기반 (피그마 미제작 영역)</span>
-    <div class="seg" data-flow="f4"><button class="on-asis" data-v="asis">AS-IS</button><button data-v="tobe">TO-BE</button></div></div>
-  <div class="cols">
-    <div class="screens">
-      <div class="view on" data-view="f4-asis">
-        <div class="web"><div class="bar"><i></i><i></i><i></i><span class="url">partner.rentre.kr / 주문서 수정</span></div>
-          <div class="webin"><div class="side"><div class="logo">rent're 파트너센터</div><a class="on" href="#" onclick="return false">주문 관리</a></div>
-            <div class="main"><div class="crumb">주문 관리 › 주문서 수정 · P-1024</div><h3>고객 주문서 수정</h3>
-              <div class="wcard">
-                <div class="wrow"><div class="wl">계약자</div><div class="wv"><div class="inp" style="max-width:280px"><span>김**님 (010-****-1234)</span></div><span style="font-size:11px;color:#8C93AB">1인만 지정 가능</span></div></div>
-                <div class="wrow"><div class="wl">설치 주소</div><div class="wv"><div class="inp" style="max-width:420px"><span>서울 마포구 월드컵북로 **, 10*동 8**호</span></div><span style="font-size:11px;color:#8C93AB">대표 주소 1건만 표시</span></div></div>
-              </div>
-              <div class="callout co-gray" style="max-width:640px">복수 주소·복수 계약자는 채팅 확인 후 운영팀 수동 요청</div>
-              <button class="btn-fill" style="align-self:flex-end;width:auto;padding:9px 34px;font-size:13px" data-toast="저장되었습니다 (AS-IS)">수정 저장</button>
-            </div>
-          </div>
+  <div class="flowhead">
+    <h2>견적 수정 <span class="desc">(파트너 → 고객 주문서 수정)</span></h2>
+    <div class="seg" data-flow="f4">
+      <button class="on-asis" data-v="asis">AS-IS</button>
+      <button data-v="tobe">TO-BE</button>
+    </div>
+  </div>
+
+  <!-- AS-IS -->
+  <div class="view on" data-view="f4-asis">
+    <div class="web">
+      <div class="bar"><i></i><i></i><i></i><span class="url">partner.rentre.kr / 주문서 수정</span></div>
+      <div class="webin">
+        <div class="side">
+          <div class="logo">rent're 파트너센터</div>
+          <a href="#" onclick="return false">견적 관리</a>
+          <a class="on" href="#" onclick="return false">주문 관리</a>
         </div>
-        <div class="cap" style="flex-basis:100%">AS-IS · 단일 주소·계약자</div>
-      </div>
-      <div class="view" data-view="f4-tobe">
-        <div class="web"><div class="bar"><i></i><i></i><i></i><span class="url">partner.rentre.kr / 주문서 수정</span></div>
-          <div class="webin"><div class="side"><div class="logo">rent're 파트너센터</div><a class="on" href="#" onclick="return false">주문 관리</a></div>
-            <div class="main"><div class="crumb">주문 관리 › 주문서 수정 · P-1024</div><h3>고객 주문서 수정</h3>
-              <div class="wcard">
-                <div class="wrow"><div class="wl">계약자 <span class="bdg b-new">✦ 복수</span></div><div class="wv" style="gap:6px">
-                  <span class="check on"><i>✓</i>김**님 (010-****-1234) <span class="abdg">대표</span></span>
-                  <span class="check on" data-toggle><i>✓</i>이**님 (010-****-5678) <span class="abdg">공동</span></span>
-                  <span class="check" data-toggle><i></i>(주)렌탈컴퍼니 <span class="abdg">법인</span></span></div></div>
-                <div class="wrow"><div class="wl">설치 주소 <span class="bdg b-new">✦ 복수</span></div><div class="wv" style="gap:8px">
-                  <div class="addr on" data-addr><div><span class="at">집 <span class="abdg">대표</span></span><div class="ad">서울 마포구 월드컵북로 **, 10*동 8**호</div></div></div>
-                  <div class="addr" data-addr><div><span class="at">사무실</span><div class="ad">서울 강남구 테헤란로 **, 5층</div></div></div>
-                  <div class="addr" data-addr><div><span class="at">부모님 댁</span><div class="ad">경기 고양시 일산동구 중앙로 **</div></div></div></div></div>
-              </div>
-              <div class="callout co-rose" style="max-width:640px">❓ 계약 데이터 모델 선행 — <b>화면보다 개발 협의가 먼저</b> · 일정 리스크 최대</div>
-              <button class="btn-fill" style="align-self:flex-end;width:auto;padding:9px 34px;font-size:13px" data-toast="주문서가 수정되었습니다 ✓">수정 저장</button>
-            </div>
+        <div class="main">
+          <div class="crumb">주문 관리 › 주문서 수정 · P-1024</div>
+          <h3>고객 주문서 수정</h3>
+          <div class="wcard">
+            <div class="wrow"><div class="wl">계약자</div><div class="wv"><div class="inp" style="max-width:280px"><span>김**님 (010-****-1234)</span></div><span style="font-size:11px;color:#8C93AB">주문 생성 시 고정 · 1인만 지정 가능</span></div></div>
+            <div class="wrow"><div class="wl">설치 주소</div><div class="wv"><div class="inp" style="max-width:420px"><span>서울 마포구 월드컵북로 **, 10*동 8**호</span></div><span style="font-size:11px;color:#8C93AB">고객이 등록한 대표 주소 1건만 표시</span></div></div>
+            <div class="wrow"><div class="wl">계약 조건</div><div class="wv">
+              <div class="kv" style="max-width:380px"><span class="k">제품</span><span class="v">[코웨이] 아이콘 정수기 (냉온정)</span></div>
+              <div class="kv" style="max-width:380px"><span class="k">의무사용 / 계약</span><span class="v num">36개월 / 60개월</span></div>
+              <div class="kv" style="max-width:380px"><span class="k">월 렌탈료</span><span class="v num">30,900원</span></div>
+            </div></div>
           </div>
+          <div class="callout" style="max-width:640px">복수 주소·복수 계약자(공동/법인) 케이스는 채팅으로 별도 확인 후 운영팀에 수동 요청</div>
+          <button class="btn-fill" style="align-self:flex-end;padding:9px 34px;font-size:13px;width:auto" data-toast="저장되었습니다 (AS-IS 데모)">수정 저장</button>
         </div>
-        <div class="cap" style="flex-basis:100%">TO-BE · 복수 주소/계약자 (클릭 토글)</div>
       </div>
     </div>
-    <aside class="notes">
-      <div class="note n-new"><h4>✦ 케이티 제안</h4><ul><li>복수 고객 주소 확인·선택</li><li>계약자 복수 선택(공동/법인)</li></ul></div>
-      <div class="note n-q"><h4>❓ 논의</h4><ul><li>계약 데이터 모델 선행</li><li>일정 리스크 최대 → 우선순위 뒤로</li></ul></div>
-    </aside>
+    <div class="cap" style="flex-basis:100%">AS-IS · 단일 주소 · 단일 계약자 고정</div>
+  </div>
+
+  <!-- TO-BE -->
+  <div class="view" data-view="f4-tobe">
+    <div class="web">
+      <div class="bar"><i></i><i></i><i></i><span class="url">partner.rentre.kr / 주문서 수정</span></div>
+      <div class="webin">
+        <div class="side">
+          <div class="logo">rent're 파트너센터</div>
+          <a href="#" onclick="return false">견적 관리</a>
+          <a class="on" href="#" onclick="return false">주문 관리</a>
+        </div>
+        <div class="main">
+          <div class="crumb">주문 관리 › 주문서 수정 · P-1024</div>
+          <h3>고객 주문서 수정</h3>
+          <div class="wcard">
+            <div class="wrow"><div class="wl">계약자 (복수 선택)</div><div class="wv" style="gap:6px">
+              <span class="check on"><i>✓</i>김**님 (010-****-1234) <span class="abdg">대표</span></span>
+              <span class="check on" data-toggle><i>✓</i>이**님 (010-****-5678) <span class="abdg">공동 계약자</span></span>
+              <span class="check" data-toggle><i></i>(주)렌탈컴퍼니 <span class="abdg">법인</span></span>
+            </div></div>
+            <div class="wrow"><div class="wl">설치 주소 (복수 확인)</div><div class="wv" style="gap:8px">
+              <div class="addr on" data-addr><div><span class="at">집 <span class="abdg">대표</span></span><div class="ad">서울 마포구 월드컵북로 **, 10*동 8**호</div></div></div>
+              <div class="addr" data-addr><div><span class="at">사무실</span><div class="ad">서울 강남구 테헤란로 **, 5층</div></div></div>
+              <div class="addr" data-addr><div><span class="at">부모님 댁</span><div class="ad">경기 고양시 일산동구 중앙로 **</div></div></div>
+              <span style="font-size:11px;color:#8C93AB">고객이 등록한 전체 주소 확인 · 설치지 선택</span>
+            </div></div>
+            <div class="wrow"><div class="wl">계약 조건</div><div class="wv">
+              <div class="kv" style="max-width:380px"><span class="k">제품</span><span class="v">[코웨이] 아이콘 정수기 (냉온정)</span></div>
+              <div class="kv" style="max-width:380px"><span class="k">의무사용 / 계약</span><span class="v num">36개월 / 60개월</span></div>
+              <div class="kv" style="max-width:380px"><span class="k">월 렌탈료</span><span class="v num">30,900원</span></div>
+            </div></div>
+          </div>
+          <button class="btn-fill" style="align-self:flex-end;padding:9px 34px;font-size:13px;width:auto" data-toast="주문서가 수정되었습니다 ✓ (프로토타입)">수정 저장</button>
+        </div>
+      </div>
+    </div>
+    <div class="cap" style="flex-basis:100%">TO-BE · 복수 고객 주소 확인 + 계약자 복수 선택</div>
   </div>
 </section>
 
 </div>
+
 <div class="toast" id="toast" role="status"></div>
 
 <script>
 (function(){
   'use strict';
-  const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
-  const fmt=n=>Math.round(n).toLocaleString('ko-KR');
-  const MONTHS=84;
+  const $ = (s, r) => (r||document).querySelector(s);
+  const $$ = (s, r) => Array.from((r||document).querySelectorAll(s));
+  const fmt = n => Math.round(n).toLocaleString('ko-KR');
 
-  let toastT;
-  function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2200);}
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-toast]');if(b)toast(b.dataset.toast);});
-
-  // tabs
-  const tabs=$('#tabs');
-  tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-    $$('button',tabs).forEach(x=>x.classList.toggle('on',x===b));
-    $$('.flow').forEach(f=>f.classList.toggle('on',f.id===b.dataset.f));});
-
-  // AS/TO toggle
-  $$('.seg').forEach(seg=>seg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-    const flow=seg.dataset.flow,v=b.dataset.v;
-    $$('button',seg).forEach(x=>{x.classList.remove('on-asis','on-tobe');if(x===b)x.classList.add(v==='asis'?'on-asis':'on-tobe');});
-    $$(`[data-view^="${flow}-"]`).forEach(vw=>vw.classList.toggle('on',vw.dataset.view===`${flow}-${v}`));}));
-
-  // generic segmented one-of
-  document.addEventListener('click',e=>{const g=e.target.closest('[data-oneof]');if(!g)return;const b=e.target.closest('button');if(!b)return;$$('button',g).forEach(x=>x.classList.toggle('on',x===b));});
-  // yn (있어요/없어요) gating
-  document.addEventListener('click',e=>{const g=e.target.closest('[data-yn]');if(g){const b=e.target.closest('button');if(!b)return;$$('button',g).forEach(x=>x.classList.toggle('on',x===b));const on=$('#'+g.dataset.yn+'-on');if(on)on.style.display=b.textContent==='있어요'?'':'none';return;}
-    const g2=e.target.closest('[data-yn2]');if(g2){const b=e.target.closest('button');if(b)$$('button',g2).forEach(x=>x.classList.toggle('on',x===b));}});
-  // swatches
-  document.addEventListener('click',e=>{const s=e.target.closest('.sw');if(!s)return;$$('.sw',s.parentElement).forEach(x=>x.classList.toggle('on',x===s));});
-  // stepper
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-step]');if(!b)return;const el=$('#f2-qty');let v=+el.textContent+ +b.dataset.step;el.textContent=Math.max(1,v);});
-  // radios / chips / toggles / checks / addr (web)
-  document.addEventListener('click',e=>{const r=e.target.closest('.radio[data-rg]');if(!r)return;$$(`.radio[data-rg="${r.dataset.rg}"]`).forEach(x=>x.classList.toggle('on',x===r));if(r.dataset.show){const el=document.getElementById(r.dataset.show);if(el)el.style.display='';}if(r.dataset.showOff){const el=document.getElementById(r.dataset.showOff);if(el)el.style.display='none';}});
-  document.addEventListener('click',e=>{const c=e.target.closest('.chip[data-cg]');if(c)$$(`.chip[data-cg="${c.dataset.cg}"]`).forEach(x=>x.classList.toggle('on',x===c));});
-  document.addEventListener('click',e=>{const c=e.target.closest('button.chip');if(c&&!c.dataset.cg)c.classList.toggle('on');});
-  document.addEventListener('click',e=>{const t=e.target.closest('.toggle');if(t)t.classList.toggle('off');});
-  document.addEventListener('click',e=>{const c=e.target.closest('.check');if(!c)return;if(!c.hasAttribute('data-toggle')&&c.id!=='brandLimit')return;c.classList.toggle('on');c.querySelector('i').textContent=c.classList.contains('on')?'✓':'';});
-  document.addEventListener('click',e=>{const a=e.target.closest('[data-addr]');if(a)a.classList.toggle('on');});
-  document.addEventListener('click',e=>{const rl=e.target.closest('.radioline');if(!rl||rl.classList.contains('dim'))return;$$('.radioline',rl.parentElement).forEach(x=>x.classList.toggle('on',x===rl));});
-
-  /* ══ PROMO ENGINE ══ */
-  const TYPES={
-    half:{label:'반값 할인',icon:'½',color:'#5B6CF0',note:'*월 요금의 50% 자동 할인',block:'disc'},
-    rate:{label:'정률 할인',icon:'%',color:'#DFA829',block:'disc',isNew:true},
-    amount:{label:'금액 할인',icon:'₩',color:'#F0913D',block:'disc'},
-    exempt:{label:'월 요금 면제',icon:'免',color:'#31C48D',block:'disc'},
-    extra:{label:'추가 요금',icon:'＋',color:'#E06B4F',block:'extra'}
-  };
-  let uid=0;
-  const flows={
-    f1:{base:28400,disc:[
-      {id:++uid,type:'rate',mode:'range',from:1,to:84,val:15,name:'타사보상 할인'},
-      {id:++uid,type:'amount',mode:'range',from:1,to:12,val:10000,name:'1만원 추가할인'},
-      {id:++uid,type:'exempt',mode:'list',list:[40,80],name:'면제'}
-    ],extra:[{id:++uid,type:'extra',mode:'range',from:1,to:84,val:2000,name:'조리수기'}]},
-    f2:{base:33000,disc:[
-      {id:++uid,type:'half',mode:'range',from:1,to:12,val:50,name:'여름 맞이 반값 할인'},
-      {id:++uid,type:'rate',mode:'range',from:13,to:39,val:3,name:'타사보상 정률'},
-      {id:++uid,type:'exempt',mode:'list',list:[40],name:'첫 달 무료'}
-    ],extra:[]}
-  };
-  function inRange(p,m){return p.mode==='list'?(p.list||[]).includes(m):(m>=p.from&&m<=p.to);}
-  function calc(f){
-    const st=flows[f],all=[...st.disc,...st.extra],fees=[],tagsArr=[];
-    for(let m=1;m<=MONTHS;m++){
-      let fee=st.base,tags=[],ex=false;
-      for(const p of all){if(!inRange(p,m))continue;
-        if(p.type==='exempt'){ex=true;tags.push({t:'exempt'});continue;}
-        if(p.type==='half'){fee-=st.base*0.5;tags.push({t:'half'});}
-        if(p.type==='rate'){fee-=st.base*(p.val/100);tags.push({t:'rate',v:p.val});}
-        if(p.type==='amount'){fee-=p.val;tags.push({t:'amount'});}
-        if(p.type==='extra'){fee+=p.val;tags.push({t:'extra'});}
-      }
-      if(ex)fee=0;
-      fees.push(Math.max(0,Math.round(fee)));tagsArr.push(tags);
-    }
-    const segs=[];
-    for(let i=0;i<MONTHS;i++){const key=fees[i]+'|'+JSON.stringify(tagsArr[i]);
-      if(segs.length&&segs[segs.length-1].key===key)segs[segs.length-1].to=i+1;
-      else segs.push({key,from:i+1,to:i+1,fee:fees[i],tags:tagsArr[i]});}
-    const total=fees.reduce((a,b)=>a+b,0),save=st.base*MONTHS-total;
-    return{segs,total,save,base:st.base};
+  /* toast */
+  let toastTimer;
+  function toast(msg){
+    const t = $('#toast');
+    t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('on'), 2200);
   }
-
-  function promoCard(f,p){
-    const T=TYPES[p.type],nw=T.isNew?' new':'';
-    let valBlock='';
-    if(p.type==='half')valBlock=`<div class="fl"><span class="lb">할인 금액 <span class="st">${T.note}</span></span></div>`;
-    else if(p.type==='rate')valBlock=`<div class="fl"><span class="lb">할인율 <span class="st">중앙 통제 기본값 · 예외는 직접 입력 <span class="bdg b-q">❓승인</span></span></span><div class="inbox" style="max-width:110px"><input type="number" data-pf="val" value="${p.val}"><span class="u">%</span></div></div>`;
-    else if(p.type==='amount')valBlock=`<div class="fl"><span class="lb">할인 금액</span><div class="inbox" style="max-width:150px"><span class="u">−</span><input type="number" data-pf="val" value="${p.val}"><span class="u">원</span></div></div>`;
-    else if(p.type==='extra')valBlock=`<div class="fl"><span class="lb">추가 금액</span><div class="inbox" style="max-width:150px"><span class="u">＋</span><input type="number" data-pf="val" value="${p.val}"><span class="u">원</span></div></div>`;
-    const isList=p.mode==='list';
-    const rangeBlock=`<div class="fl"><div class="lblrow"><span class="lb">${p.type==='exempt'?'면제 회차':'적용 기간'}</span><span class="rtoggle" data-mode><button class="${isList?'':'on'}" data-m="range">범위</button><button class="${isList?'on':''}" data-m="list">개별</button></span></div>
-      ${isList?`<div class="inbox l"><input data-pf="list" value="${(p.list||[]).join(', ')}" placeholder="예: 40, 80"><span class="u">회차</span></div>`
-              :`<div class="rangerow"><div class="inbox"><input type="number" data-pf="from" value="${p.from}"></div><span style="color:#9198AE">~</span><div class="inbox"><input type="number" data-pf="to" value="${p.to}"></div><span class="u" style="font-size:11px;color:#8C93AB">회차</span><label class="cbox ${p.from===1&&p.to===MONTHS?'on':''}" data-whole><i>${p.from===1&&p.to===MONTHS?'✓':''}</i>전체</label></div>`}</div>`;
-    const promoName=p.type==='extra'?'추가 요금명':'프로모션명';
-    return `<div class="pcard${nw}" data-pid="${p.id}">
-      <div class="pc-h"><span class="pi" style="background:${T.color}">${T.icon}</span><span class="nm">${T.label}</span>${T.isNew?' <span class="bdg b-new">✦NEW</span>':''}<span class="cv">▾</span></div>
-      <div class="pc-b">
-        <div class="fl"><span class="lb">${promoName} <span class="st">*더보기 시 ${T.label}으로 표시됩니다</span></span><div class="field"><input data-pf="name" value="${p.name||''}" placeholder="예시: 여름 맞이 ${T.label}"></div></div>
-        ${valBlock}${rangeBlock}
-        <button class="delbtn" data-del="${p.id}">삭제</button>
-      </div></div>`;
-  }
-  function renderBlock(f,block){
-    const el=$('#'+f+'-'+block),arr=flows[f][block];
-    if(arr.length){el.innerHTML=arr.map(p=>promoCard(f,p)).join('');}
-    else{el.innerHTML=`<div class="placeholder"><p>요금 정보 추가 시 월 요금에 자동 반영되어<br>고객 화면에 표시됩니다</p></div>`;}
-  }
-  function find(f,id){return [...flows[f].disc,...flows[f].extra].find(x=>x.id==id);}
-
-  // graph mini SVG (flow2 sheet) + Claude review (flow1 step4)
-  const TAGMETA={half:{c:'gt-p',l:'반값'},rate:{c:'gt-p'},amount:{c:'gt-p',l:'금액할인'},exempt:{c:'gt-ex',l:'면제'},extra:{c:'gt-x'}};
-  function tagLabel(t){if(t.t==='rate')return '정률 '+t.v+'%';if(t.t==='extra')return '+조리수기';if(t.t==='amount')return '+금액할인';if(t.t==='half')return '반값';if(t.t==='exempt')return '면제';}
-  function segTags(tags){return tags.map(t=>{const isX=t.t==='extra';return `<span class="gtag ${isX?'gt-x':(t.t==='exempt'?'gt-ex':'gt-p')}">${tagLabel(t)}</span>`;}).join('');}
-  function reviewHTML(f){
-    const {segs,total,save,base}=calc(f);
-    const pct=base*MONTHS?Math.round(save/(base*MONTHS)*100):0, avg=Math.round(total/MONTHS);
-    const rows=segs.map(s=>{const ex=s.tags.some(t=>t.t==='exempt');const disc=s.fee-base;
-      return `<tr class="${ex?'ex':''}"><td><span class="per num">${s.from===s.to?s.from+'회차':s.from+'~'+s.to+'회차'}</span><br><span class="permo num">${s.to-s.from+1}개월간</span></td>
-        <td>${segTags(s.tags)||'—'}</td><td class="num">${fmt(s.fee)}원</td><td class="num gdisc">${disc<0?'':'+'}${fmt(disc)}원</td></tr>`;}).join('');
-    return `<div class="hero"><div class="cap2">🎯 이 프로모션으로 절감되는 금액</div><div class="big num">${fmt(save)}<span> 원 절감</span></div>
-      <div class="stats"><div class="sc"><div class="l">기존가 대비</div><div class="v num">${pct}%</div></div><div class="sc"><div class="l">월 평균 납부</div><div class="v num">${fmt(avg)}원</div></div><div class="sc"><div class="l">총 납부예상</div><div class="v num">${fmt(total)}원</div></div></div></div>
-      <div class="cldtabs"><div class="cldtab"><span class="ic">📊</span>타깃확인</div><div class="cldtab on"><span class="ic">▦</span>표</div><div class="cldtab"><span class="ic">📈</span>가격 그래프</div></div>
-      <div class="cldcard"><div class="cldprod"><div class="th">💧</div><div><div class="p1">아이콘2 냉온정 정수기</div><div class="p2">코웨이 · CHP-7211N · 셀프관리 · ${MONTHS}개월</div></div></div>
-        <div style="overflow-x:auto"><table class="gtable"><thead><tr><th>기간</th><th>적용 혜택</th><th>월 렌탈료</th><th>할인액</th></tr></thead><tbody>${rows}
-          <tr class="tot"><td>총 납부예상액<br><span class="permo">(${MONTHS}개월)</span></td><td></td><td class="num">${fmt(total)}원</td><td class="num gdisc">-${fmt(save)}원</td></tr></tbody></table></div></div>
-      <div class="cldtotal"><div><div class="l1">기본 월 렌탈료 × ${MONTHS}개월</div><div class="l2">총 납부예상액</div></div><div class="rt"><div class="rv num">${fmt(total)}원</div><div class="rs num">총 ${fmt(save)}원 절감</div></div></div>`;
-  }
-  function miniGraphHTML(f){
-    const {segs,total,save,base}=calc(f);const W=300,H=110,TOP=14,BOT=96;
-    const mx=Math.max(base,...segs.map(s=>s.fee),1),y=v=>BOT-(v/mx)*(BOT-TOP),x=m=>(m/MONTHS)*W;
-    let line='',area=`M0 ${BOT} `;segs.forEach((s,i)=>{const x1=x(s.from-1),x2=x(s.to),yy=y(s.fee);line+=(i?'L':'M')+x1+' '+yy+' L'+x2+' '+yy+' ';area+=`L${x1} ${yy} L${x2} ${yy} `;});area+=`L${W} ${BOT} Z`;
-    const rows=segs.map(s=>`<div class="betw" style="padding:6px 0;border-top:1px solid #F0F1F6"><span class="num" style="color:#4A5169">${s.from===s.to?s.from+'회차':s.from+'~'+s.to+'회차'} ${segTags(s.tags)}</span><b class="num">월 ${fmt(s.fee)}원</b></div>`).join('');
-    return `<div class="sh"><div class="st"><b>월 요금 변동 그래프</b><button data-close>✕</button></div>
-      <svg viewBox="0 0 ${W} ${H}" width="100%" height="110"><line x1="0" y1="34" x2="${W}" y2="34" stroke="#EEF0F6"/><line x1="0" y1="60" x2="${W}" y2="60" stroke="#EEF0F6"/><path d="${area}" fill="#EEF0FE"/><path d="${line}" fill="none" stroke="#5B6CF0" stroke-width="2"/></svg>
-      <div style="max-height:180px;overflow-y:auto">${rows}</div>
-      <div class="betw" style="background:#F5F7FF;border-radius:9px;padding:11px 12px;margin-top:8px"><span style="color:#69718A;font-size:12px">총 납부예상 <span class="gdisc num" style="font-weight:700">-${fmt(save)}원</span></span><b class="num" style="font-size:15px;color:var(--primary-ink)">${fmt(total)}원</b></div></div>`;
-  }
-
-  function refresh(f){if(f==='f1'&&$('#f1-cld'))$('#f1-cld').innerHTML=reviewHTML('f1');}
-
-  // block events (edit/delete/mode/whole)
-  ['f1','f2'].forEach(f=>['disc','extra'].forEach(block=>{
-    const el=$('#'+f+'-'+block);if(!el)return;
-    el.addEventListener('input',e=>{const inp=e.target.closest('[data-pf]');if(!inp)return;const p=find(f,e.target.closest('[data-pid]').dataset.pid);if(!p)return;
-      const k=inp.dataset.pf;
-      if(k==='list')p.list=inp.value.split(',').map(s=>parseInt(s.trim(),10)).filter(n=>!isNaN(n)&&n>=1&&n<=MONTHS);
-      else if(k==='name')p.name=inp.value;
-      else{const v=parseFloat(inp.value);if(!isNaN(v))p[k]=v;}
-      refresh(f);});
-    el.addEventListener('click',e=>{
-      const del=e.target.closest('[data-del]');if(del){flows[f][block]=flows[f][block].filter(x=>x.id!=del.dataset.del);renderBlock(f,block);refresh(f);toast('요금 정보가 삭제되었습니다');return;}
-      const md=e.target.closest('[data-m]');if(md){const p=find(f,e.target.closest('[data-pid]').dataset.pid);p.mode=md.dataset.m;if(p.mode==='list'&&!p.list)p.list=[p.from||1];renderBlock(f,block);refresh(f);return;}
-      const wh=e.target.closest('[data-whole]');if(wh){const p=find(f,e.target.closest('[data-pid]').dataset.pid);const whole=!(p.from===1&&p.to===MONTHS);p.from=1;p.to=whole?MONTHS:12;renderBlock(f,block);refresh(f);return;}
-    });
-  }));
-  // base inputs
-  [['f1','#f1-base'],['f2','#f2-base']].forEach(([f,sel])=>{const inp=$(sel);if(!inp)return;
-    inp.addEventListener('input',()=>{const r=parseInt(inp.value.replace(/[^\d]/g,''),10);flows[f].base=isNaN(r)?0:r;refresh(f);});
-    inp.addEventListener('blur',()=>{inp.value=fmt(flows[f].base);});});
-
-  // bottom sheets
-  const DISC_OPTS=['half','rate','amount','exempt'];
-  function sheetHTML(f){return `<div class="sh"><div class="st"><b>프로모션 정보 추가</b><button data-close>✕</button></div>
-    ${DISC_OPTS.map(k=>{const T=TYPES[k];return `<button class="opt" data-addopt="${f}:disc:${k}"><span class="pi" style="background:${T.color}">${T.icon}</span><span><span class="ot">${T.label}${T.isNew?' <span class="bdg b-new">✦ 제안</span>':''}</span><div class="od">${k==='half'?'월 요금의 50% 자동 할인':k==='rate'?'월 요금의 n% 할인 (중앙 통제)':k==='amount'?'원하는 금액만큼 정액 할인':'선택 회차 월 요금 면제'}</div></span></button>`;}).join('')}</div>`;}
-  $('#f1-sheet').innerHTML=sheetHTML('f1');$('#f2-sheet').innerHTML=sheetHTML('f2');
-
-  const DEFAULTS={half:{mode:'range',from:1,to:12,val:50},rate:{mode:'range',from:13,to:39,val:3},amount:{mode:'range',from:1,to:12,val:10000},exempt:{mode:'list',list:[40],val:0},extra:{mode:'range',from:1,to:84,val:2000}};
-  function addPromo(f,block,type){flows[f][block].push({id:++uid,type,name:'',...JSON.parse(JSON.stringify(DEFAULTS[type]))});renderBlock(f,block);refresh(f);toast(TYPES[type].label+' 카드가 추가되었습니다');}
-
-  document.addEventListener('click',e=>{
-    const sh=e.target.closest('[data-sheet]');if(sh){$('#'+sh.dataset.sheet.split(':')[0]+'-sheet').classList.add('on');return;}
-    const ad=e.target.closest('[data-add]');if(ad){const[f,block]=ad.dataset.add.split(':');addPromo(f,block,'extra');return;}
-    const gr=e.target.closest('[data-graph]');if(gr){const g=$('#'+gr.dataset.graph+'-graph');g.innerHTML=miniGraphHTML(gr.dataset.graph);g.classList.add('on');return;}
-    const opt=e.target.closest('[data-addopt]');if(opt){const[f,block,type]=opt.dataset.addopt.split(':');addPromo(f,block,type);opt.closest('.sheet').classList.remove('on');return;}
-    const sheet=e.target.closest('.sheet');if(sheet&&(e.target.closest('[data-close]')||e.target===sheet))sheet.classList.remove('on');
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-toast]');
+    if (b) toast(b.dataset.toast);
   });
 
-  // flow1 wizard
-  const LBL={1:'월 렌탈료',2:'고객 혜택',3:'요금·특약',4:'견적서 검수'};
-  function goStep(f,n){[1,2,3,4].forEach(i=>{const el=$('#'+f+'-s'+i);if(el)el.style.display=i===n?(i===4?'block':'flex'):'none';});
-    const sts=$$('#'+f+'-steps .st'),bars=$$('#'+f+'-steps .bar');
-    sts.forEach((s,i)=>{s.classList.toggle('on',i===n-1);const d=s.querySelector('.dot');d.classList.toggle('on',i<=n-1);d.classList.toggle('done',i<n-1);});
-    bars.forEach((b,i)=>b.classList.toggle('on',i<n-1));
-    if(n===4)refresh('f1');
-    const scr=$('#'+f+'-s'+n).closest('.scr');if(scr)scr.scrollTop=0;}
-  document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(!g)return;const[f,n]=g.dataset.go.split(':');goStep(f,+n);});
+  /* flow tabs */
+  const tabs = $('#tabs');
+  tabs.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    $$('button', tabs).forEach(x => x.classList.toggle('on', x === b));
+    $$('.flow').forEach(f => f.classList.toggle('on', f.id === b.dataset.f));
+  });
 
-  // init
-  renderBlock('f1','disc');renderBlock('f1','extra');renderBlock('f2','disc');renderBlock('f2','extra');
-  refresh('f1');
+  /* AS-IS / TO-BE */
+  $$('.seg').forEach(seg => {
+    seg.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      const flow = seg.dataset.flow, v = b.dataset.v;
+      $$('button', seg).forEach(x => {
+        x.classList.remove('on-asis','on-tobe');
+        if (x === b) x.classList.add(v === 'asis' ? 'on-asis' : 'on-tobe');
+      });
+      $$(`[data-view^="${flow}-"]`).forEach(vw =>
+        vw.classList.toggle('on', vw.dataset.view === `${flow}-${v}`));
+    });
+  });
+
+  /* generic controls */
+  $$('[data-oneof]').forEach(g => g.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    $$('button', g).forEach(x => x.classList.toggle('on', x === b));
+  }));
+  document.addEventListener('click', e => {
+    const r = e.target.closest('.wradio[data-rg]');
+    if (r) $$(`.wradio[data-rg="${r.dataset.rg}"]`).forEach(x => x.classList.toggle('on', x === r));
+    const rr = e.target.closest('.radio[data-rg]');
+    if (rr) $$(`.radio[data-rg="${rr.dataset.rg}"]`).forEach(x => x.classList.toggle('on', x === rr));
+    const t = e.target.closest('.toggle');
+    if (t){ t.classList.toggle('off'); t.setAttribute('aria-checked', String(!t.classList.contains('off'))); }
+    const c = e.target.closest('.check[data-toggle]');
+    if (c){ c.classList.toggle('on'); c.querySelector('i').textContent = c.classList.contains('on') ? '✓' : ''; }
+    const a = e.target.closest('[data-addr]');
+    if (a) a.classList.toggle('on');
+    const ch = e.target.closest('button.chip');
+    if (ch) ch.classList.toggle('on');
+    const mchip = e.target.closest('button.mchip');
+    if (mchip) mchip.classList.toggle('on');
+  });
+
+  /* 있어요/없어요 → 대상 표시/숨김 (없어요면 입력칸 자체 제거) */
+  let cashOn = true;
+  $$('.yn[data-yn]').forEach(yn => {
+    yn.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      $$('button', yn).forEach(x => x.classList.toggle('on', x === b));
+      const target = document.getElementById(yn.dataset.yn);
+      const isYes = b === yn.children[0];
+      if (target) target.style.display = isYes ? 'flex' : 'none';
+      if (yn.dataset.flag === 'cash') cashOn = isYes;
+    });
+  });
+
+  /* ══════════ 요금 구성 엔진 ══════════ */
+  const MONTHS = 84;
+  const TYPES = {
+    half:   { label:'반값 할인',   icon:'½', cls:'pi-half',  tag:'반값', fixed:'반값할인',    hint:'*미작성시 반값 할인으로 표시됩니다',  desc:'월 요금의 50% 할인' },
+    amount: { label:'금액 할인',   icon:'₩', cls:'pi-amt',   tag:'금액', fixed:'타사보상할인', hint:'*미작성시 금액 할인으로 표시됩니다',  desc:'월 요금에서 원하는 금액만큼 할인' },
+    exempt: { label:'월 요금 면제', icon:'免', cls:'pi-ex',    tag:'면제', fixed:'월요금 면제',  hint:'*미작성시 월 요금 면제로 표시됩니다', desc:'선택한 회차의 월 요금 면제' },
+    extra:  { label:'추가 요금',   icon:'＋', cls:'pi-extra', tag:'추가', fixed:null,          hint:'*미작성시 추가요금으로 표시됩니다',   desc:'조리수기 등 추가 요금' }
+  };
+  const TAGCLS = { half:'tg-half', amount:'tg-amt', exempt:'tg-free', extra:'tg-extra' };
+  const NAME_TAGS = ['반값할인','타사보상할인','월요금 면제','신규고객 할인','첫달무료','패키지 할인','재렌탈 할인'];
+  let uid = 0;
+
+  const flows = {
+    f1: { base: 33000, promos: [] },
+    f2: { base: 33000, promos: [
+      { id:++uid, type:'half',   from:1,  to:12, val:50,    name:'반값할인',    fixedName:true },
+      { id:++uid, type:'amount', from:13, to:39, val:10000, name:'타사보상할인', fixedName:true },
+      { id:++uid, type:'exempt', from:40, to:40, val:0,     name:'월요금 면제',  fixedName:true }
+    ] }
+  };
+
+  function clampRange(p){
+    p.from = Math.min(Math.max(1, p.from|0 || 1), MONTHS);
+    p.to   = Math.min(Math.max(1, p.to|0 || 1), MONTHS);
+    if (p.from > p.to) [p.from, p.to] = [p.to, p.from];
+  }
+
+  function calc(flow){
+    const st = flows[flow];
+    st.promos.forEach(clampRange);
+    const fees = [], applied = [];
+    for (let m = 1; m <= MONTHS; m++){
+      let fee = st.base, exempt = false;
+      const tags = [];
+      for (const p of st.promos){
+        if (m < p.from || m > p.to) continue;
+        if (p.type === 'exempt'){ exempt = true; tags.push('exempt'); continue; }
+        if (p.type === 'half')  { fee -= st.base * 0.5; tags.push('half'); }
+        if (p.type === 'amount'){ fee -= p.val; tags.push('amount'); }
+        if (p.type === 'extra') { fee += p.val; tags.push('extra'); }
+      }
+      if (exempt) fee = 0;
+      fees.push(Math.max(0, fee)); applied.push(tags);
+    }
+    const segs = [];
+    for (let i = 0; i < MONTHS; i++){
+      const key = fees[i] + '|' + applied[i].join(',');
+      if (segs.length && segs[segs.length-1].key === key) segs[segs.length-1].to = i+1;
+      else segs.push({ key, from:i+1, to:i+1, fee:fees[i], tags:applied[i] });
+    }
+    const total = fees.reduce((a,b) => a+b, 0);
+    return { segs, total, save: st.base * MONTHS - total };
+  }
+
+  function renderRows(el, segs){
+    el.innerHTML = segs.map(s => `
+      <div class="rrow">
+        <span class="rl num">${s.from === s.to ? s.from + '회차' : s.from + '~' + s.to + '회차'}${s.tags.map(t => `<span class="rtag ${TAGCLS[t]}">${TYPES[t].tag}</span>`).join('')}</span>
+        <b class="num">월 ${fmt(s.fee)}원</b>
+      </div>`).join('');
+  }
+
+  /* 프로모션명: 최초 카드 = 고정값 / 이후 카드 = 태그 선택 */
+  function nameField(p){
+    const T = TYPES[p.type];
+    if (p.type === 'extra'){
+      return `
+        <div class="frow">
+          <div class="lblrow"><span class="lbl">추가 요금명</span><span class="hint">${T.hint}</span></div>
+          <input class="ninp left" data-pf="name" value="${p.name}" placeholder="예시 : 조리수기 추가">
+        </div>`;
+    }
+    if (p.fixedName){
+      return `
+        <div class="frow">
+          <div class="lblrow"><span class="lbl">프로모션명</span><span class="hint">${T.hint}</span></div>
+          <input class="ninp left" value="${p.name}" readonly>
+        </div>`;
+    }
+    return `
+      <div class="frow">
+        <div class="lblrow"><span class="lbl">프로모션명</span><span class="hint">태그 선택</span></div>
+        <select class="ninp" data-pf="name">
+          ${NAME_TAGS.map(t => `<option${t === p.name ? ' selected' : ''}>${t}</option>`).join('')}
+        </select>
+      </div>`;
+  }
+
+  function promoCard(p){
+    const T = TYPES[p.type];
+    let amountRow = '';
+    if (p.type === 'half') amountRow = `
+      <div class="frow"><div class="inline"><span class="lbl" style="font-size:12.5px">할인 금액</span><span class="autotext">*월 요금의 50% 자동 할인</span></div></div>`;
+    if (p.type === 'amount') amountRow = `
+      <div class="frow"><span class="lbl" style="font-size:12.5px">할인 금액</span>
+        <div class="moneyrow"><input class="ninp num" data-pf="val" type="text" inputmode="numeric" value="-${fmt(p.val)}" style="width:130px"><span class="unit">원</span></div></div>`;
+    if (p.type === 'extra') amountRow = `
+      <div class="frow"><span class="lbl" style="font-size:12.5px">추가 금액</span>
+        <div class="moneyrow"><input class="ninp num" data-pf="val" type="text" inputmode="numeric" value="+${fmt(p.val)}" style="width:130px"><span class="unit">원</span></div></div>`;
+    const isFull = p.from === 1 && p.to === MONTHS;
+    return `
+      <div class="promo" data-pid="${p.id}">
+        <div class="phead"><span class="pi ${T.cls}">${T.icon}</span><b>${T.label}</b><span class="chev">⌄</span></div>
+        ${nameField(p)}
+        ${amountRow}
+        <div class="frow">
+          <div class="lblrow"><span class="lbl" style="font-size:12.5px">적용 기간</span>
+            <div class="mseg"><button class="on">범위</button><button>개별</button></div>
+          </div>
+          <div class="rangewrap">
+            <div class="rangebox">
+              <input data-pf="from" type="number" min="1" max="${MONTHS}" value="${p.from}"><span class="dash">–</span><input data-pf="to" type="number" min="1" max="${MONTHS}" value="${p.to}"><span style="font-size:12px;color:#8C93AB;flex-shrink:0">개월</span>
+            </div>
+            <span class="check${isFull ? ' on' : ''}" data-full><i>${isFull ? '✓' : ''}</i>전체기간</span>
+          </div>
+        </div>
+        <button class="btn-del" data-del="${p.id}">삭제</button>
+      </div>`;
+  }
+
+  function renderPromos(flow){
+    const st = flows[flow];
+    const disc = st.promos.filter(p => p.type !== 'extra');
+    const extra = st.promos.filter(p => p.type === 'extra');
+    $('#' + flow + '-plist').innerHTML = disc.map(promoCard).join('');
+    $('#' + flow + '-xlist').innerHTML = extra.map(promoCard).join('');
+    const at = $(`[data-emptyat="${flow}"]`);
+    if (at) at.style.display = disc.length ? 'none' : '';
+  }
+
+  function refresh(flow){
+    const st = flows[flow];
+    const { segs, total, save } = calc(flow);
+    const has = st.promos.length > 0;
+    const wrap = $('#' + flow + '-rows-wrap');
+    if (wrap) wrap.style.display = has ? 'flex' : 'none';
+    if (has) renderRows($('#' + flow + '-rows'), segs);
+    if (flow === 'f2'){
+      if (has){
+        $('#f2-total').textContent = fmt(total) + '원';
+        $('#f2-sv').textContent = save > 0 ? '-' + fmt(save) + '원' : '±0원';
+      }
+    } else {
+      renderRows($('#f1-rows2'), segs);
+      $('#f1-total2').textContent = fmt(total) + '원';
+      $('#f1-sv2').textContent = save > 0 ? '-' + fmt(save) + '원' : '±0원';
+      $('#f1-sum-fee').textContent = fmt(segs[0].fee) + '원/월' + (segs.length > 1 ? ' 부터' : '');
+    }
+  }
+
+  /* promo edit / delete */
+  ['f1','f2'].forEach(flow => {
+    ['-plist','-xlist'].forEach(sfx => {
+      const el = $('#' + flow + sfx);
+      el.addEventListener('input', e => {
+        const inp = e.target.closest('[data-pf]'); if (!inp) return;
+        const card = e.target.closest('[data-pid]');
+        const p = flows[flow].promos.find(x => x.id == card.dataset.pid); if (!p) return;
+        const f = inp.dataset.pf;
+        if (f === 'name'){ p.name = inp.value; return; }
+        const v = parseFloat(String(inp.value).replace(/[^\d.]/g,''));
+        if (!isNaN(v)) p[f] = v;
+        refresh(flow);
+      });
+      el.addEventListener('click', e => {
+        const del = e.target.closest('[data-del]');
+        if (del){
+          flows[flow].promos = flows[flow].promos.filter(x => x.id != del.dataset.del);
+          renderPromos(flow); refresh(flow);
+          toast('요금 정보가 삭제되었습니다');
+          return;
+        }
+        const full = e.target.closest('[data-full]');
+        if (full){
+          const card = e.target.closest('[data-pid]');
+          const p = flows[flow].promos.find(x => x.id == card.dataset.pid);
+          const on = !(p.from === 1 && p.to === MONTHS);
+          if (on){ p.from = 1; p.to = MONTHS; } else { p.from = 1; p.to = 12; }
+          renderPromos(flow); refresh(flow);
+          return;
+        }
+        const ms = e.target.closest('.mseg button');
+        if (ms) $$('button', ms.parentElement).forEach(x => x.classList.toggle('on', x === ms));
+      });
+    });
+  });
+
+  /* base fee */
+  [['f1','#f1-base'], ['f2','#f2-base']].forEach(([flow, sel]) => {
+    const inp = $(sel);
+    inp.addEventListener('input', () => {
+      const raw = parseInt(inp.value.replace(/[^\d]/g,''), 10);
+      flows[flow].base = isNaN(raw) ? 0 : raw;
+      refresh(flow);
+    });
+    inp.addEventListener('blur', () => { inp.value = fmt(flows[flow].base); });
+  });
+
+  /* bottom sheet : 프로모션 정보 추가 */
+  function sheetHTML(){
+    return `<div class="sh">
+      <div class="st"><b>프로모션 정보 추가</b><button data-close>✕</button></div>
+      ${['half','amount','exempt'].map(k => {
+        const T = TYPES[k];
+        return `<button class="opt" data-add="${k}">
+          <span class="pi ${T.cls}">${T.icon}</span>
+          <span><span class="ot">${T.label}</span><br><span class="od">${T.desc}</span></span>
+        </button>`;
+      }).join('')}
+    </div>`;
+  }
+  $$('.sheet').forEach(sh => { sh.innerHTML = sheetHTML(); });
+
+  function addPromo(flow, type){
+    const st = flows[flow];
+    const T = TYPES[type];
+    const firstOfType = !st.promos.some(p => p.type === type);
+    const defaults = {
+      half:   { from:1,  to:12, val:50 },
+      amount: { from:13, to:39, val:10000 },
+      exempt: { from:40, to:40, val:0 },
+      extra:  { from:1,  to:MONTHS, val:1000 }
+    };
+    const p = { id:++uid, type, ...defaults[type] };
+    if (type === 'extra'){
+      p.fixedName = false; p.name = '';
+    } else if (firstOfType){
+      p.fixedName = true; p.name = T.fixed;
+    } else {
+      p.fixedName = false; p.name = T.fixed;
+    }
+    st.promos.push(p);
+    renderPromos(flow); refresh(flow);
+    toast(T.label + (p.fixedName ? ` 추가 — 프로모션명 "${p.name}"` : ' 추가 — 프로모션명 태그를 선택하세요'));
+  }
+
+  document.addEventListener('click', e => {
+    const open = e.target.closest('[data-sheet]');
+    if (open){ $('#' + open.dataset.sheet + '-sheet').classList.add('on'); return; }
+    const ax = e.target.closest('[data-add-extra]');
+    if (ax){ addPromo(ax.dataset.addExtra, 'extra'); return; }
+    const sh = e.target.closest('.sheet');
+    if (sh){
+      const add = e.target.closest('[data-add]');
+      if (add){ addPromo(sh.dataset.sheetFor, add.dataset.add); sh.classList.remove('on'); return; }
+      if (e.target.closest('[data-close]') || e.target === sh) sh.classList.remove('on');
+    }
+  });
+
+  /* wizard (4스텝) */
+  function goStep(flow, n){
+    [1,2,3,4].forEach(i => {
+      const el = $('#' + flow + '-s' + i);
+      if (el) el.style.display = i === n ? 'block' : 'none';
+    });
+    $$('#' + flow + '-stepbar .stp').forEach(s => s.classList.toggle('on', +s.dataset.s <= n));
+    if (n === 4){
+      refresh('f1');
+      $('#f1-sum-cash').style.display = cashOn ? '' : 'none';
+      if (cashOn) $('#f1-sum-cashv').textContent = ($('#f1-cash').value || '24') + '만원';
+    }
+    const scr = $('#' + flow + '-s' + n).closest('.scr');
+    if (scr) scr.scrollTop = 0;
+  }
+  document.addEventListener('click', e => {
+    const g = e.target.closest('[data-go]'); if (!g) return;
+    const [flow, n] = g.dataset.go.split(':');
+    goStep(flow, +n);
+  });
+
+  /* greeting counter */
+  const greet = $('#f1-greet');
+  greet.addEventListener('input', () => { $('#f1-cnt').textContent = greet.value.length; });
+  $('#f1-cnt').textContent = greet.value.length;
+
+  /* init */
+  renderPromos('f1'); renderPromos('f2');
+  refresh('f1'); refresh('f2');
 })();
 </script>
