@@ -83,6 +83,9 @@
   .moneyrow .unit{font-size:13px;color:#333B52;font-weight:700;flex-shrink:0}
   .row2{display:flex;gap:8px}
   .row2>*{flex:1}
+  .navrow{display:flex;gap:10px;align-items:stretch}
+  .navrow .btn-ghost{flex:0 0 auto;width:104px;padding-left:0;padding-right:0}
+  .navrow .btn-fill{flex:1}
   .kv{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;gap:8px}
   .kv .k{color:var(--muted)}
   .kv .v{font-weight:700;text-align:right}
@@ -189,6 +192,22 @@
   .srow{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px solid #F4F5F9;gap:10px}
   .srow .k{color:#8C93AB}
   .srow .v{font-weight:700;text-align:right}
+  /* 검수 견적서 정보 */
+  .rv-logo{width:16px;height:16px;border-radius:99px;background:#E4002B;color:#fff;font-size:8px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-right:2px}
+  .rv-blue{color:var(--primary-ink);font-weight:800}
+  .rv-orange{color:#E8890C;font-weight:800}
+  .rv-sub{font-size:11.5px;font-weight:700;color:#333B52;padding:8px 0 4px}
+  .rv-promobox{background:#F4F5F9;border-radius:12px;padding:12px 13px;display:flex;flex-direction:column;gap:8px;margin:2px 0 4px}
+  .rv-promobox .hd{font-size:12.5px;font-weight:800;display:flex;align-items:center;gap:6px;color:#1F2740}
+  .rv-promobox .hd .ck{color:var(--primary)}
+  .rv-promobox .li{font-size:11.5px;color:#565E77;line-height:1.55;padding-left:2px}
+  .rv-seg{border-top:1px solid #F0F1F6;padding:9px 0}
+  .rv-seg .sgtop{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;gap:8px}
+  .rv-seg .sgtop .lab{color:#333B52;font-weight:700}
+  .rv-seg .sgtop .fee{font-weight:800}
+  .rv-seg .sgsub{display:flex;justify-content:space-between;font-size:11px;color:#9AA1B8;padding-top:4px;gap:8px}
+  .rv-special{background:var(--primary-soft);border-radius:12px;padding:12px 13px;font-size:11px;color:#3A4796;line-height:1.75}
+  .rv-special b{font-weight:800;display:block;margin-bottom:3px}
 
   /* AS-IS 전용 */
   .cash{background:linear-gradient(120deg,#2B3350,#3A4470);border-radius:12px;padding:13px 15px;color:#fff;display:flex;align-items:center;gap:10px}
@@ -312,9 +331,9 @@
             <div class="hint">총 3개월 : 1년차 1개월, 2·3년차 각 1개월</div>
             <div class="callout">할인 유형(반값 → 면제 → 지원금…)마다 질문 화면이 하나씩 이어지고, 견적 유형(일반/타사/결합) 구분은 없음</div>
           </div>
-          <div class="sec row2">
-            <button class="btn-ghost">← 이전</button>
-            <button class="btn-fill" data-toast="캐시 1개 차감 후 다음 질문으로… (AS-IS 데모)">다음 →</button>
+          <div class="sec navrow">
+            <button class="btn-ghost">이전</button>
+            <button class="btn-fill" data-toast="캐시 1개 차감 후 다음 질문으로… (AS-IS 데모)">다음</button>
           </div>
         </div>
       </div></div>
@@ -357,7 +376,7 @@
                 <div id="f1-disc" style="display:flex;flex-direction:column;gap:12px">
                   <div>
                     <div class="lblrow"><span class="lbl" style="font-size:12.5px">고객 안내명</span><span class="hint">*필수</span></div>
-                    <input class="ninp left" style="margin-top:6px" placeholder="예시 : 신규 고객 전용">
+                    <input class="ninp left" id="f1-guidename" style="margin-top:6px" value="신규 고객 전용" placeholder="예시 : 신규 고객 전용">
                   </div>
                   <span class="lbl" style="font-size:12.5px">할인 요금 구성</span>
                   <div id="f1-plist" style="display:flex;flex-direction:column;gap:12px"></div>
@@ -415,7 +434,7 @@
                 <div class="radio" data-rg="f1-open"><i></i><div><span class="rt">버튼 누르면 공개</span><div class="rd">고객이 버튼을 눌러야 혜택이 공개돼요.</div></div></div>
                 <div class="radio" data-rg="f1-open"><i></i><div><span class="rt">채팅 상담 후 공개</span><div class="rd">채팅 상담을 시작하면 공개돼요.</div></div></div>
               </div>
-              <div class="sec row2">
+              <div class="sec navrow">
                 <button class="btn-ghost" data-go="f1:1">이전</button>
                 <button class="btn-fill" data-go="f1:3">다음</button>
               </div>
@@ -438,7 +457,7 @@
                 <div class="kv"><span class="k">예상 수수료 총액</span><span class="v num" style="color:var(--primary-ink)">44,000원</span></div>
                 <div class="hint">고객 주문 확정 후 2영업일 이내 청구됩니다</div>
               </div>
-              <div class="sec row2">
+              <div class="sec navrow">
                 <button class="btn-ghost" data-go="f1:2">이전</button>
                 <button class="btn-fill" data-go="f1:4">다음</button>
               </div>
@@ -468,26 +487,12 @@
                 <div class="srow"><span class="k">관리방식<br><span style="font-size:10.5px">(관리주기)</span></span><span class="v">방문관리 (4개월)</span></div>
                 <span class="sg">기존 사용 제품</span>
                 <div class="srow"><span class="k">브랜드</span><span class="v">코웨이</span></div>
-                <div class="srow"><span class="k">제품종류</span><span class="v">정수기</span></div>
+                <div class="srow"><span class="k">제품종류</span><span class="v">매트리스</span></div>
                 <div class="srow"><span class="k">사용기간</span><span class="v">1~2년</span></div>
               </div>
               <div class="gapband"></div>
-              <div class="sec sumsec">
-                <span class="sh2">견적서 정보</span>
-                <div class="srow"><span class="k">렌탈사</span><span class="v">LG헬로비전</span></div>
-                <div class="srow"><span class="k">월 렌탈료</span><span class="v num" id="f1-sum-fee">—</span></div>
-                <div class="rows" style="margin-top:6px">
-                  <span class="rt">구간 별 요금</span>
-                  <div id="f1-rows2"></div>
-                </div>
-                <div class="total"><span style="font-size:11.5px;color:var(--muted)">총 납부예상액 <span class="sv num" id="f1-sv2"></span></span><b class="num" id="f1-total2"></b></div>
-                <div id="f1-sum-cash">
-                  <span class="sg">제공 혜택</span>
-                  <div class="srow"><span class="k">현금 지원금</span><span class="v num" style="color:#E8890C" id="f1-sum-cashv">24만원</span></div>
-                </div>
-                <div class="srow"><span class="k">거래 성사 수수료</span><span class="v num">44,000원</span></div>
-              </div>
-              <div class="sec row2">
+              <div class="sec sumsec" id="f1-review"></div>
+              <div class="sec navrow">
                 <button class="btn-ghost" data-go="f1:3">이전</button>
                 <button class="btn-fill" data-toast="견적이 발송되었습니다 ✓ (프로토타입)">견적 발송하기</button>
               </div>
@@ -1010,10 +1015,17 @@
   function nameField(p){
     const T = TYPES[p.type];
     if (p.type === 'extra'){
+      if (p.fixedName){
+        return `
+        <div class="frow">
+          <div class="lblrow"><span class="lbl">추가 요금명</span><span class="hint">${T.hint}</span></div>
+          <input class="ninp left" value="${p.name}" readonly>
+        </div>`;
+      }
       return `
         <div class="frow">
           <div class="lblrow"><span class="lbl">추가 요금명</span><span class="hint">${T.hint}</span></div>
-          <input class="ninp left" data-pf="name" value="${p.name}" placeholder="예시 : 조리수기 추가">
+          <input class="ninp left" data-pf="name" value="${p.name}" placeholder="예시 : 정수기 추가">
         </div>`;
     }
     if (p.fixedName){
@@ -1087,11 +1099,62 @@
         $('#f2-sv').textContent = save > 0 ? '-' + fmt(save) + '원' : '±0원';
       }
     } else {
-      renderRows($('#f1-rows2'), segs);
-      $('#f1-total2').textContent = fmt(total) + '원';
-      $('#f1-sv2').textContent = save > 0 ? '-' + fmt(save) + '원' : '±0원';
-      $('#f1-sum-fee').textContent = fmt(segs[0].fee) + '원/월' + (segs.length > 1 ? ' 부터' : '');
+      renderF1Review(segs, total, save);
     }
+  }
+
+  function renderF1Review(segs, total, save){
+    const el = $('#f1-review'); if (!el) return;
+    const base = flows.f1.base;
+    const promos = flows.f1.promos;
+    const disc = promos.filter(p => p.type !== 'extra');
+    const extra = promos.filter(p => p.type === 'extra');
+    const guide = ($('#f1-guidename') && $('#f1-guidename').value.trim()) || '상위 프로모션 명';
+    const openR = $('.radio.on[data-rg="f1-open"] .rt');
+    const openText = openR ? openR.childNodes[0].textContent.trim() : '바로 공개';
+    const cashV = ($('#f1-cash') && $('#f1-cash').value) || '24';
+
+    const eff = p => p.type === 'half' ? '월 50% 할인'
+      : p.type === 'amount' ? `월 ${fmt(p.val)}원 할인`
+      : p.type === 'exempt' ? '월 요금 면제' : `월 ${fmt(p.val)}원 추가`;
+    const per = p => p.from === p.to ? `${p.from}회차` : `${p.from}~${p.to}회차`;
+    const delta = p => p.type === 'half' ? '-' + fmt(base * 0.5) + '원'
+      : p.type === 'amount' ? '-' + fmt(p.val) + '원'
+      : p.type === 'extra' ? '+' + fmt(p.val) + '원' : '월 요금 면제';
+
+    const segHtml = segs.map(s => {
+      const act = promos.filter(p => s.from >= p.from && s.from <= p.to);
+      const dur = s.to - s.from + 1;
+      const subs = act.map(p => `<div class="sgsub"><span>ㄴ ${p.name || '추가요금'}</span><span class="num">${delta(p)}</span></div>`).join('');
+      return `<div class="rv-seg"><div class="sgtop"><span class="lab num">${s.from === s.to ? s.from + '회차' : s.from + '~' + s.to + '회차'} (${dur}개월간)</span><span class="fee num">월 ${fmt(s.fee)}원</span></div>${subs}</div>`;
+    }).join('');
+
+    el.innerHTML = `
+      <span class="sh2">견적서 정보</span>
+      <span class="rv-sub">계약 조건</span>
+      <div class="srow"><span class="k">렌탈사</span><span class="v"><span class="rv-logo">LG</span>LG 헬로비전</span></div>
+      <div class="srow"><span class="k">1회차 월 렌탈료</span><span class="v rv-blue num">${fmt(segs[0].fee)}원/월</span></div>
+      ${disc.length ? `<span class="rv-sub">적용 프로모션</span>
+        <div class="rv-promobox"><div class="hd"><span class="ck">✓</span>${guide}</div>${disc.map(p => `<div class="li">· ${p.name} / ${per(p)} / ${eff(p)}</div>`).join('')}</div>` : ''}
+      ${extra.length ? `<span class="rv-sub">추가 요금</span>
+        <div class="rv-promobox">${extra.map(p => `<div class="li">· ${p.name || '추가요금'} / ${per(p)} / 월 ${fmt(p.val)}원 추가</div>`).join('')}</div>` : ''}
+      <span class="rv-sub">구간 별 요금</span>
+      ${segHtml}
+      <div class="total"><span style="font-size:11.5px;color:var(--muted)">총 납부예상액 <span class="sv num">${save > 0 ? '-' + fmt(save) + '원' : '±0원'}</span></span><b class="num">${fmt(total)}원</b></div>
+      <span class="rv-sub" style="padding-top:12px">제공 혜택</span>
+      ${cashOn ? `<div class="srow"><span class="k">현금 지원금</span><span class="v rv-orange num">${cashV}만원</span></div>` : ''}
+      <div style="font-size:12.5px;color:#8C93AB;padding:6px 0 4px">추가 혜택</div>
+      <div class="chips">
+        <button class="chip on">네이버포인트 1만원</button><button class="chip on">스타벅스 기프티콘</button>
+        <button class="chip on">700W 전자레인지 증정</button><button class="chip on">등록비 면제</button><button class="chip on">설치비 면제</button>
+      </div>
+      <div class="srow" style="border:0;margin-top:8px"><span class="k">혜택 노출 방식</span><span class="v">${openText}</span></div>
+      <span class="rv-sub" style="padding-top:10px">특약사항</span>
+      <div class="rv-special"><b>특약사항</b>· 13개월 이내 해지시 사은품 가액이 고객에게 청구됩니다.<br>· 3개월 이상 렌탈 요금 체납시 사은품 가액이 고객에게 청구됩니다.<br>· 13개월 내에 해지시 지원금이 고객에게 청구됩니다.<br>· 3개월 이상 렌탈요금 체납시 지원금이 고객에게 청구됩니다.</div>
+      <span class="rv-sub" style="padding-top:12px">거래성사수수료 ⓘ</span>
+      <div class="srow"><span class="k">기본 수수료</span><span class="v num">44,000원</span></div>
+      <div class="srow"><span class="k">예상 수수료 총액 / 대</span><span class="v rv-blue num">44,000원</span></div>
+      <div class="srow"><span class="k">결제기한</span><span class="v">고객 설치 인증 완료 후,<br>1영업일 이내</span></div>`;
   }
 
   /* promo edit / delete */
@@ -1169,7 +1232,8 @@
     };
     const p = { id:++uid, type, ...defaults[type] };
     if (type === 'extra'){
-      p.fixedName = false; p.name = '';
+      if (firstOfType){ p.fixedName = true; p.name = '조리수기'; }
+      else { p.fixedName = false; p.name = ''; }
     } else if (firstOfType){
       p.fixedName = true; p.name = T.fixed;
     } else {
@@ -1200,11 +1264,7 @@
       if (el) el.style.display = i === n ? 'block' : 'none';
     });
     $$('#' + flow + '-stepbar .stp').forEach(s => s.classList.toggle('on', +s.dataset.s <= n));
-    if (n === 4){
-      refresh('f1');
-      $('#f1-sum-cash').style.display = cashOn ? '' : 'none';
-      if (cashOn) $('#f1-sum-cashv').textContent = ($('#f1-cash').value || '24') + '만원';
-    }
+    if (n === 4) refresh('f1');
     const scr = $('#' + flow + '-s' + n).closest('.scr');
     if (scr) scr.scrollTop = 0;
   }
