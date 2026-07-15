@@ -400,6 +400,19 @@
   .msec .msub:first-child{border-top:0;margin-top:0}
   .cmini2{font-size:9.5px;font-weight:700;color:#565E77;background:#EEF0F5;border-radius:5px;padding:2px 7px;white-space:nowrap}
 
+  .checkrow{display:flex;align-items:center;gap:9px;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font-size:12px;cursor:pointer;background:#fff}
+  .checkrow.on{border-color:var(--primary);background:var(--primary-soft)}
+  .checkrow .cbx{width:16px;height:16px;border-radius:4px;border:1.5px solid #C2C7D8;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff}
+  .checkrow.on .cbx{background:var(--primary);border-color:var(--primary)}
+  .checkrow.on .cbx::after{content:"✓"}
+  .checkrow .ed{margin-left:auto;color:#B8BECF}
+  .warnbox{background:#FBECEF;color:#C0392B;font-size:10.5px;border-radius:8px;padding:9px 11px;line-height:1.4}
+  .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .mgrid .mc{border:1px solid #E1E4EE;border-radius:8px;padding:7px 2px;font-size:10px;text-align:center;color:#9AA1B8;background:#fff}
+  .yearseg{display:flex;background:#EBEDF4;border-radius:9px;padding:3px}
+  .yearseg button{flex:1;padding:7px 2px;border-radius:7px;font-size:10.5px;font-weight:700;color:var(--muted)}
+  .yearseg button.on{background:var(--primary);color:#fff}
+
 </style>
 
 <div class="top">
@@ -434,43 +447,31 @@
   <!-- AS-IS -->
   <div class="view on" data-view="f1-asis">
     <div style="width:100%">
-      <div class="asis-note">🖥 현재 견적 제출 프로세스 그대로(HTML) · 견적요청함 → 고객정보/활동내역 → <b>캐시 소진</b> → 혜택별 질문형 작성 → 검수</div>
+      <div class="asis-note">🖥 현재 견적 제출 프로세스 전체(HTML) · 견적요청함 → 고객정보/활동내역+<b>캐시 소진</b> → ①월 렌탈료(반값) → ②고객혜택(월요금면제·현금지원금·기본/추가혜택) → ③설정 및 특약(공개 옵션) → ④견적서 검수</div>
       <div class="f4wrap">
-
-        <div class="miniph"><div class="miniscr">
+<div class="miniph"><div class="miniscr">
           <div class="minibar"><b style="font-size:14px">견적요청함</b><span>⚙</span></div>
           <div class="reqtabs"><span class="on">진행중</span><span>종료</span></div>
           <div class="reqfilter"><span class="ff">브랜드 ▾</span><span class="ff">종류 ▾</span><span style="margin-left:auto;font-size:9.5px;color:#4A5583">☑ 견적 제출가능 건만 보기</span></div>
           <div class="reqcount"><span style="color:var(--primary-ink)">12974건</span><span style="margin-left:auto;font-size:10px;color:#8C93AB;font-weight:600">최신순 ▾</span></div>
-          <div class="reqcard">
-            <div class="rtop">🙂 박** 님<span class="cnt">받은 견적 6</span></div>
-            <div class="rbody"><div class="rthumb"></div><div style="flex:1"><div class="rp1">쿠쿠 | CP-AQS100EWH</div><div class="rp2">제로 100 미니 냉온정 얼음정수기</div><div class="rp3">방문관리 | 60개월</div></div><div class="subbtn">✎<br>견적 제출하기</div></div>
-          </div>
-          <div class="reqcard">
-            <div class="rtop">🙂 김** 님<span class="cnt">받은 견적 4</span></div>
-            <div class="rbody"><div class="rthumb"></div><div style="flex:1"><div class="rp1">SK 브로드밴드 | 인터넷</div><div class="rp2">500MBps + 183채널</div><div class="rp3">인터넷 | TV | 3년 약정</div></div><div class="subbtn">✎<br>견적 제출하기</div></div>
-          </div>
-          <div class="reqcard">
-            <div class="rtop">🙂 박아람 님<span class="cnt">받은 견적 7</span></div>
+          <div class="reqcard"><div class="rtop">🙂 박** 님<span class="cnt">받은 견적 6</span></div>
+            <div class="rbody"><div class="rthumb"></div><div style="flex:1"><div class="rp1">쿠쿠 | CP-AQS100EWH</div><div class="rp2">제로 100 미니 냉온정 얼음정수기</div><div class="rp3">방문관리 | 60개월</div></div><div class="subbtn">✎<br>견적 제출하기</div></div></div>
+          <div class="reqcard"><div class="rtop">🙂 김** 님<span class="cnt">받은 견적 4</span></div>
+            <div class="rbody"><div class="rthumb"></div><div style="flex:1"><div class="rp1">SK 브로드밴드 | 인터넷</div><div class="rp2">500MBps + 183채널</div><div class="rp3">인터넷 | TV | 3년 약정</div></div><div class="subbtn">✎<br>견적 제출하기</div></div></div>
+          <div class="reqcard"><div class="rtop">🙂 박아람 님<span class="cnt">받은 견적 7</span></div>
             <div class="rbody"><div class="rthumb"></div><div style="flex:1"><div class="rp1">LG | WD722RH</div><div class="rp2">퓨리케어 오브제컬렉션 냉온정 얼음정수기 (25년 12월 출시)</div><div class="rp3">방문관리 | 72개월</div></div>
-              <div style="text-align:right;flex-shrink:0"><div style="font-size:7.5px;background:#6B4CE0;color:#fff;border-radius:5px;padding:2px 5px;margin-bottom:3px">자동 발송 견적</div><div style="font-size:11px;font-weight:800"><span style="background:#EDECFB;color:#6E5CC4;border-radius:4px;padding:0 4px;font-size:8px">반값</span> 월 51,900원</div><div style="font-size:8px;color:#8C93AB">34만원 페이백</div></div></div>
-          </div>
+              <div style="text-align:right;flex-shrink:0"><div style="font-size:7.5px;background:#6B4CE0;color:#fff;border-radius:5px;padding:2px 5px;margin-bottom:3px">자동 발송 견적</div><div style="font-size:11px;font-weight:800"><span style="background:#EDECFB;color:#6E5CC4;border-radius:4px;padding:0 4px;font-size:8px">반값</span> 월 51,900원</div><div style="font-size:8px;color:#8C93AB">34만원 페이백</div></div></div></div>
           <div class="mininav"><span class="on">📋<br>견적요청함</span><span>💬<br>채팅</span><span>🏠<br>홈</span><span>🗂<br>견적보관함</span><span>👤<br>마이페이지</span></div>
         </div></div>
-
-        <div class="miniph"><div class="miniscr">
+<div class="miniph"><div class="miniscr">
           <div class="minibar"><span>‹ &nbsp;🙂 박** 님</span></div>
           <div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div>
           <div class="msec"><div class="mh">고객 정보</div>
-            <div class="mr"><span>이름</span><b>박**님</b></div>
-            <div class="mr"><span>성별 / 연령대</span><b>남성 / 40대</b></div>
-            <div class="mr"><span>계약 방식</span><b>렌탈</b></div>
-            <div class="mr"><span>의무사용기간 (소유권이전)</span><b>60개월 (60개월)</b></div>
+            <div class="mr"><span>이름</span><b>박**님</b></div><div class="mr"><span>성별 / 연령대</span><b>남성 / 40대</b></div>
+            <div class="mr"><span>계약 방식</span><b>렌탈</b></div><div class="mr"><span>의무사용기간 (소유권이전)</span><b>60개월 (60개월)</b></div>
             <div class="mr"><span>관리방식 (관리주기)</span><b>방문관리 (4개월 주기)</b></div></div>
           <div class="msec"><div class="mh">기존 사용 제품</div>
-            <div class="mr"><span>브랜드</span><b>코웨이</b></div>
-            <div class="mr"><span>제품종류</span><b>매트리스</b></div>
-            <div class="mr"><span>사용기간</span><b>2-5년</b></div></div>
+            <div class="mr"><span>브랜드</span><b>코웨이</b></div><div class="mr"><span>제품종류</span><b>매트리스</b></div><div class="mr"><span>사용기간</span><b>2-5년</b></div></div>
           <div class="msec"><div class="mh">렌트리에서 계약한 내역</div><div style="text-align:center;font-size:10.5px;color:#8C93AB;padding:8px">해당 내역이 없어요.</div></div>
           <div class="msec"><div class="mh">최근 3개월 활동 내역</div>
             <div class="mr" style="align-items:center"><span>코웨이 · 26.07.13<br><span style="color:#565E77">코웨이 정수기 CHPI-7430N</span></span><span style="background:#FCEBD9;color:#C86B2B;border-radius:99px;padding:2px 8px;font-weight:700;font-size:10px">상담중</span></div></div>
@@ -478,13 +479,10 @@
           <div class="msheet-modal"><div class="mm">
             <div class="mt"><span style="color:var(--primary-ink)">1,000캐시</span>를 소진하여<br>견적서를 제출합니다.</div>
             <div class="ms">소진 후 잔여캐시 1,067,000캐시</div>
-            <div class="mb"><button class="c">취소</button><button class="g">계속하기</button></div>
-          </div></div>
+            <div class="mb"><button class="c">취소</button><button class="g">계속하기</button></div></div></div>
         </div></div>
-
-        <div class="miniph"><div class="miniscr">
-          <div class="minibar" style="justify-content:center;position:relative"><span style="position:absolute;left:13px">‹</span>견적서 작성</div>
-          <div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div><div class="stepbar" style="margin:10px 12px 2px;padding:10px 10px"><div class="stp on"><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div><div class="stp "><i>2</i><span>고객혜택</span></div><div class="stpline"></div><div class="stp "><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div><div class="stp "><i>4</i><span>견적서 검수</span></div></div>
+<div class="miniph"><div class="miniscr">
+          <div class="minibar" style="justify-content:center;position:relative"><span style="position:absolute;left:13px">‹</span>견적서 작성</div><div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div><div class="stepbar" style="margin:10px 12px 2px;padding:10px 8px"><div class="stp on"><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div><div class="stp "><i>2</i><span>고객혜택</span></div><div class="stpline"></div><div class="stp "><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div><div class="stp "><i>4</i><span>견적서 검수</span></div></div>
           <div style="padding:12px 14px;display:flex;flex-direction:column;gap:9px">
             <b style="font-size:13px">반값할인 혜택이 있나요?</b>
             <div class="pseg"><button>아니요</button><button class="on">네, 있어요</button></div>
@@ -494,15 +492,58 @@
             <div style="border:1px solid #E7E9F2;border-radius:12px;padding:9px;box-shadow:0 3px 10px rgba(24,32,64,.06)">
               <div class="cboxes">
                 <div class="cbox cfee"><div class="cbox-top"><span>월 요금</span><span class="cbadge" style="background:#FBE7F0;color:#C0498A">반값할인</span></div><div class="cfee-price"><b>21,450</b>원</div><div style="font-size:9px;color:#8C93AB">6개월 후 42,900원</div></div>
-                <div class="cbox ccash"><div class="cbox-top"><span>현금지원금</span><span class="cguar">지급보장</span></div><div class="ccash-amt">48<span>만원</span></div></div>
-              </div>
-            </div>
-          </div>
-        </div></div>
-
-        <div class="miniph"><div class="miniscr">
-          <div class="minibar" style="justify-content:center;position:relative"><span style="position:absolute;left:13px">‹</span>견적서 작성</div>
-          <div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div><div class="stepbar" style="margin:10px 12px 2px;padding:10px 10px"><div class="stp "><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div><div class="stp "><i>2</i><span>고객혜택</span></div><div class="stpline"></div><div class="stp "><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div><div class="stp on"><i>4</i><span>견적서 검수</span></div></div>
+                <div class="cbox ccash"><div class="cbox-top"><span>현금지원금</span><span class="cguar">지급보장</span></div><div class="ccash-amt">48<span>만원</span></div></div></div></div>
+          </div></div></div>
+<div class="miniph"><div class="miniscr">
+          <div class="minibar" style="justify-content:center;position:relative"><span style="position:absolute;left:13px">‹</span>견적서 작성</div><div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div><div class="stepbar" style="margin:10px 12px 2px;padding:10px 8px"><div class="stp "><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div><div class="stp on"><i>2</i><span>고객혜택</span></div><div class="stpline"></div><div class="stp "><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div><div class="stp "><i>4</i><span>견적서 검수</span></div></div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+            <b style="font-size:13px">월요금 면제 혜택이 있나요?</b>
+            <div class="pseg"><button>아니요</button><button class="on">네, 있어요</button></div>
+            <b style="font-size:12px;margin-top:2px">면제 월 선택</b>
+            <div class="yearseg"><button class="on">1년차</button><button>2년차</button><button>3년차</button><button>4년차</button><button>5년차</button></div>
+            <div class="mgrid"><div class="mc">✓ 1월</div><div class="mc">✓ 2월</div><div class="mc">✓ 3월</div><div class="mc">✓ 4월</div><div class="mc">✓ 5월</div><div class="mc">✓ 6월</div><div class="mc">✓ 7월</div><div class="mc">✓ 8월</div><div class="mc">✓ 9월</div><div class="mc">✓ 10월</div><div class="mc">✓ 11월</div><div class="mc">✓ 12월</div></div>
+            <div class="hint" style="text-align:center;background:#F4F5F9;border-radius:8px;padding:8px;font-weight:700;color:#4A5169">총 개월 :</div>
+          </div></div></div>
+<div class="miniph"><div class="miniscr">
+          <div class="minibar" style="justify-content:center;position:relative"><span style="position:absolute;left:13px">‹</span>견적서 작성</div><div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div><div class="stepbar" style="margin:10px 12px 2px;padding:10px 8px"><div class="stp "><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div><div class="stp on"><i>2</i><span>고객혜택</span></div><div class="stpline"></div><div class="stp "><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div><div class="stp "><i>4</i><span>견적서 검수</span></div></div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+            <b style="font-size:13px">현금 지원금 혜택이 있나요?</b>
+            <div class="pseg"><button>없어요</button><button class="on">네, 있어요</button></div>
+            <b style="font-size:12px;margin-top:2px">지급할 현금 지원금을 입력해주세요.</b>
+            <div style="font-size:16px;display:flex;align-items:center;gap:8px">현금 지원금은</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:15px"><input class="ninp sm" value="0" style="width:74px"> 만원 입니다.</div>
+            <div class="hint">거래 성사 수수료는 <b style="color:var(--primary-ink)">148,500원</b> 입니다.</div>
+            <div class="infoline"><i class="i">!</i><span>현금 지원금은 설치인증일 기준, <b>당일 지급</b>을 원칙으로 합니다.</span></div>
+            <label class="check"><i></i>채팅 상담 이후에 기입할게요.</label>
+          </div></div></div>
+<div class="miniph"><div class="miniscr">
+          <div class="minibar" style="justify-content:center;position:relative"><span style="position:absolute;left:13px">‹</span>견적서 작성</div><div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div><div class="stepbar" style="margin:10px 12px 2px;padding:10px 8px"><div class="stp "><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div><div class="stp on"><i>2</i><span>고객혜택</span></div><div class="stpline"></div><div class="stp "><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div><div class="stp "><i>4</i><span>견적서 검수</span></div></div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:9px">
+            <b style="font-size:13px">기본 혜택을 선택해주세요. <span style="font-weight:400;color:#8C93AB;font-size:11px">(중복 가능)</span></b>
+            <div class="checkrow"><i class="cbx"></i>설치비 면제</div>
+            <div class="checkrow"><i class="cbx"></i>등록비 면제</div>
+            <b style="font-size:13px;margin-top:4px">추가로 제공할 혜택을 지정해주세요. <span style="font-weight:400;color:#8C93AB;font-size:11px">(중복 가능)</span></b>
+            <div class="warnbox">⚠ 지원금, 월요금면제 이외 항목만 등록해주세요.</div>
+            <div class="checkrow"><i class="cbx"></i>✓ 조리수밸브 x 렌탈료 할인<span class="ed">✎</span></div>
+            <div class="checkrow"><i class="cbx"></i>＋ 조리수 밸브 무상설치<span class="ed">✎</span></div>
+            <div class="checkrow"><i class="cbx"></i>2인사용권장<span class="ed">✎</span></div>
+            <div class="checkrow"><i class="cbx"></i>타사 1년 2만원 할인<span class="ed">✎</span></div>
+            <div class="checkrow"><i class="cbx"></i>전액상품권<span class="ed">✎</span></div>
+          </div></div></div>
+<div class="miniph"><div class="miniscr">
+          <div class="minibar" style="justify-content:center;position:relative"><span style="position:absolute;left:13px">‹</span>견적서 작성</div><div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div><div class="stepbar" style="margin:10px 12px 2px;padding:10px 8px"><div class="stp "><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div><div class="stp "><i>2</i><span>고객혜택</span></div><div class="stpline"></div><div class="stp on"><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div><div class="stp "><i>4</i><span>견적서 검수</span></div></div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:9px">
+            <b style="font-size:13px">혜택 공개 옵션을 선택해주세요. <span style="font-weight:400;color:#8C93AB;font-size:11px">(택1)</span></b>
+            <div class="infoline"><i class="i">!</i><span>견적 제출 이후, 공개 옵션 변경은 바로 공개만 가능하며, 고객이 견적을 확인한 후에는 변경이 불가합니다.</span></div>
+            <div class="radio on"><i></i><div><span class="rt">바로 공개 <span class="rec">추천</span></span><div class="rd">고객이 견적서를 받자마자 확인이 가능해요.</div></div></div>
+            <div class="radio"><i></i><div><span class="rt">버튼 누르면 공개</span><div class="rd">고객이 버튼을 누르면 바로 확인할 수 있어요.</div></div></div>
+            <div class="radio"><i></i><div><span class="rt">채팅 상담 후 공개</span><div class="rd">직접 상담을 통해 고객을 확인한 후, 수동으로 공개해요.</div></div></div>
+            <b style="font-size:12px;margin-top:2px">고객에게 보이는 화면</b>
+            <div style="background:#E7E9F2;border-radius:10px;height:120px;display:flex;align-items:center;justify-content:center;color:#9AA1B8;font-size:11px">📱 고객 화면 미리보기</div>
+            <div class="infoline"><i class="i">!</i><span>위 이미지는 실제 적용한 혜택이 아닌, 예시영상입니다.</span></div>
+          </div></div></div>
+<div class="miniph"><div class="miniscr">
+          <div class="minibar" style="justify-content:center;position:relative"><span style="position:absolute;left:13px">‹</span>견적서 작성</div><div class="cprod" style="padding:9px 13px;border-bottom:1px solid var(--line)"><div class="thumb" style="width:34px;height:40px"></div><div><div class="p1">쿠쿠 | CP-AQS100EWH</div><div class="p2" style="font-size:11px">제로 100 미니 냉온정 얼음정수기</div><div class="p3">방문관리 | 60개월</div></div></div><div class="stepbar" style="margin:10px 12px 2px;padding:10px 8px"><div class="stp "><i>1</i><span>월 렌탈료</span></div><div class="stpline"></div><div class="stp "><i>2</i><span>고객혜택</span></div><div class="stpline"></div><div class="stp "><i>3</i><span>설정 및 특약</span></div><div class="stpline"></div><div class="stp on"><i>4</i><span>견적서 검수</span></div></div>
           <div class="msec"><div class="mh" style="font-size:13px">견적서 정보</div>
             <div class="msub">계약 조건</div>
             <div class="mr"><span>렌탈사</span><b>CUCKOO 쿠쿠</b></div>
@@ -518,9 +559,8 @@
             <div class="mr"><span>결제기한</span><b style="text-align:right">고객 설치 완료 후,<br>1영업일 이내</b></div></div>
           <div class="mnav"><button class="mbtn-line">이전</button><button class="mbtn-fill">견적 발송하기</button></div>
         </div></div>
-
       </div>
-      <div class="cap" style="flex-basis:100%">AS-IS · 현재 견적 제출 프로세스 (4단계 대표 화면)</div>
+      <div class="cap" style="flex-basis:100%">AS-IS · 현재 견적 제출 프로세스 (전 단계)</div>
     </div>
   </div>
 
@@ -1724,6 +1764,29 @@
   }
   st.addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) show(b.dataset.side); });
   show('partner');
+})();
+</script>
+
+<script>
+(function(){
+  var t=document.getElementById('toast'), tm;
+  function toast(m){ if(!t) return; t.textContent=m; t.classList.add('on'); clearTimeout(tm); tm=setTimeout(function(){t.classList.remove('on');},1600); }
+  document.addEventListener('click', function(e){
+    var ps=e.target.closest('.pseg button, .yearseg button');
+    if(ps){ Array.prototype.forEach.call(ps.parentElement.children, function(x){ x.classList.toggle('on', x===ps); }); return; }
+    var yn=e.target.closest('.yn button');
+    if(yn && !yn.closest('[data-yn]')){ Array.prototype.forEach.call(yn.parentElement.children, function(x){ x.classList.toggle('on', x===yn); }); return; }
+    var rd=e.target.closest('.radio:not([data-rg])');
+    if(rd){ var g=rd.parentElement.querySelectorAll('.radio:not([data-rg])'); Array.prototype.forEach.call(g, function(x){ x.classList.toggle('on', x===rd); }); return; }
+    var cr=e.target.closest('.checkrow');
+    if(cr){ cr.classList.toggle('on'); return; }
+    var cg=e.target.closest('.ctgl');
+    if(cg){ cg.classList.toggle('on'); return; }
+    var mc=e.target.closest('.mgrid .mc');
+    if(mc){ mc.classList.toggle('on'); return; }
+    var act=e.target.closest('.subbtn, .cchat, .mbtn-line, .mbtn-fill, .btn-mid, .outbtn, .mm .mb button, .cmemo, .reqcard');
+    if(act && !act.dataset.toast){ toast('프로토타입 데모 화면입니다'); return; }
+  });
 })();
 </script>
 
